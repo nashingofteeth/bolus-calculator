@@ -1,0 +1,58 @@
+body {
+    margin: 0 0 0 0;
+    font-size: 4vw;
+    text-align: center;
+    font-family: helvetica;
+}
+input {
+    width: 70vw;
+    height: 14vw;
+    font-size: 8vw;
+    outline: none;
+}
+h1 {
+    font-size: 8vw;
+}
+#unrounded {
+    color: lightgrey;
+    margin: -5vw 17vw 0 0;
+    display: block;
+    text-align: right;
+}
+input[type=number] {
+    text-align: center;
+}
+input[type=button] {
+    background-color: lightgray;
+    border: none;
+}
+input[type=button]:active {
+    border: .2vw solid gray;
+}
+#icr::placeholder, #isf::placeholder, #target::placeholder {
+  color: red;
+}
+#dose {
+    font-style:italic;
+    color:blue;
+}
+@media (min-width: 1000px) {
+    body {
+        margin: 3vw;
+        font-size: 1.5vw;
+        text-align: right;
+        width: 65vw;
+    }
+    input {
+        width: 20vw;
+        height: 4vw;
+        font-size: 2vw;
+    }
+    h1 {
+        font-size: 2.5vw;
+    }
+    #unrounded {
+        margin: -2vw 1vw 0 0;
+        display: block;
+    }
+}
