@@ -5,10 +5,11 @@ NETWORK:
 
 CACHE:
 
-index.html
-style.css
-script.js
-assets/apple_icon.png
-assets/favicon.png
+#index.html
+#style.css
+#script.js
+#assets/apple_icon.png
+#assets/favicon.png
+old.html
 
 # last update: 2019-02-26:v13

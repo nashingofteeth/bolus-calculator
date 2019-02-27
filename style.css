@@ -18,7 +18,17 @@ h1 {
     margin: -5vw 17vw 0 0;
     display: block;
     text-align: right;
-    height: .5vw;
+    height: .8vw;
+}
+#stacking {
+    color: red;
+    font-style: italic;
+    display: block;
+    margin-top: 5vw;
+    width: 70vw;
+    margin-left:auto;
+    margin-right:auto;
+    height: 5vw;
 }
 input[type=number] {
     text-align: center;
@@ -35,16 +45,20 @@ input[type=button]:active {
 }
 #dose {
     font-style:italic;
-    color:blue;
 }
 table, th, td {
-  border: 1px solid black;
+  border: .2vw solid black;
   border-collapse: collapse;
+  margin-bottom: 10vw;
 }
 table {
   width: 70%;
   margin-left:auto;
   margin-right:auto;
+}
+th, td {
+  padding: 5px;
+  white-space: pre;
 }
 @media (min-width: 1000px) {
     body {
@@ -64,6 +78,11 @@ table {
     #unrounded {
         margin: -2vw 1vw 0 0;
         display: block;
+    }
+    #stacking {
+        margin: 2vw 0 0 0;
+        height: 2.5vw;
+        float: right;
     }
     table {
       float: right;
