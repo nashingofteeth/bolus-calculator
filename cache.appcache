@@ -8,5 +8,7 @@ CACHE:
 index.html
 style.css
 script.js
+assets/apple_icon.png
+assets/favicon.png
 
-# last update: 2019-02-23:v01
+# last update: 2019-02-26:v13
