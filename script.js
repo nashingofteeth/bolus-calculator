@@ -9,9 +9,9 @@ if (localStorage.getItem("log")) {
     parseLog(logArray);
 }
 else {
-    var log = [];
-    localStorage.setItem("log", JSON.stringify(log));
-    parseLog(log);
+    var logTemp = [];
+    localStorage.setItem("log", JSON.stringify(logTemp));
+    parseLog(logTemp);
 }
 
 var icr = document.getElementById('icr').value,
@@ -206,7 +206,7 @@ function deleteLogItem(i) {
     localStorage.setItem("log", JSON.stringify(logItems));
 }
 
-function log() {
+function logSession() {
 
     var d = new Date();
     var M = d.getMonth();
@@ -229,16 +229,16 @@ function log() {
 
     var log = JSON.parse(localStorage.getItem("log"));
 
-    if (log.length > 0 && dose.id == log[log.length-1].id) return false;
-    else {
-        // add log item
-        log.push(dose);
-        localStorage.setItem("log", JSON.stringify(log));
-        parseLog(log);
+    // check if log item already exists
+    if (log.length && dose.id == log[log.length-1].id) return false;
 
-        // clear fields
-        var carbs = document.querySelectorAll('.carb');
-        for (i = 0; i < carbs.length; i++) carbs[i].value = '';
-        document.getElementById('bg').value = '';
-    }
+    // add log item
+    log.push(dose);
+    localStorage.setItem("log", JSON.stringify(log));
+    parseLog(log);
+
+    // clear fields
+    var carbs = document.querySelectorAll('.carb');
+    for (i = 0; i < carbs.length; i++) carbs[i].value = '';
+    document.getElementById('bg').value = '';
 }
