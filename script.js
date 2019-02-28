@@ -49,17 +49,17 @@ function addCarbs() {
 function checkStacking() {
     if (!JSON.parse(localStorage.getItem("log")).length) return false;
     var d = new Date();
-    var M = d.getMonth() * 43800;
+    var M = (d.getMonth()+1) * 43800;
     var D = d.getDate() * 1440;
     var h = d.getHours() * 60;
     var m = d.getMinutes();
-    var thisTime = M+ D+ h + m;
+    var thisTime = M + D + h + m;
 
     var logArray = JSON.parse(localStorage.getItem("log"));
-    var lastMonth = logArray[logArray.length-1].month * 43800;
-    var lastDay = logArray[logArray.length-1].date * 1440;
-    var lastHour = logArray[logArray.length-1].hour * 60;
-    var lastMinute = logArray[logArray.length-1].minute;
+    var lastMonth = Number(logArray[logArray.length-1].month) * 43800;
+    var lastDay = Number(logArray[logArray.length-1].date) * 1440;
+    var lastHour = Number(logArray[logArray.length-1].hour) * 60;
+    var lastMinute = Number(logArray[logArray.length-1].minute);
     var lastTime = lastMonth + lastDay + lastHour + lastMinute;
 
     var threeHours = 180;
@@ -176,9 +176,9 @@ function parseLog(o) {
 
       var y = document.createElement("TR");
       y.setAttribute("class", "logItem");
-      y.setAttribute("id", "logItem"+o[i].id);
+      y.setAttribute("id", o[i].id);
 
-      var tableItems = [o[i].dose, o[i].carbs, o[i].bg, o[i].icr, o[i].isf, o[i].target, addZero(o[i].hour) + ":" + addZero(o[i].minute) + ":" + addZero(o[i].second) + "\u000a" + addZero(o[i].month) + "/" + addZero(o[i].date) + "/" + String(o[i].year).substring(2), "<a href='javascript:deleteLogItem("+ o[i].id + ");'>delete</a>"];
+      var tableItems = [o[i].dose, o[i].carbs, o[i].bg, o[i].icr, o[i].isf, o[i].target, o[i].hour + ":" + o[i].minute + ":" + o[i].second + "\u000a" + o[i].month + "/" + o[i].date + "/" + String(o[i].year).substring(2), "<input type='button' onclick='deleteLogItem(this.parentNode.parentNode.id)' value='X'/>"];
 
       for (item in tableItems) {
           var z = document.createElement("TD");
@@ -190,32 +190,41 @@ function parseLog(o) {
       log.appendChild(y);
 
       // convert delete link into html
-      document.querySelector("#logItem"+o[i].id).childNodes[7].innerHTML = document.querySelector("#logItem"+o[i].id).childNodes[7].innerText;
+      document.getElementById(o[i].id).childNodes[7].innerHTML = document.getElementById(o[i].id).childNodes[7].innerText;
     }
 }
 function deleteLogItem(i) {
-    // remove from tableItems
-    var elem = document.getElementById("logItem"+i);
-    elem.parentNode.removeChild(elem);
+    var M = i.substring(0,2);
+    var D = i.substring(2,4);
+    var Y = i.substring(6,8);
+    var h = i.substring(10,8);
+    var m = i.substring(12,10);
+    var sure = confirm("You about to delete a log item created on " + M + "/" + D + "/" + Y + " at " + h + ":" + m + "." + "\nAre you sure?");
 
-    // remove from local storage
-    var logItems = JSON.parse(localStorage.getItem("log"));
-    for (n = 0; n < logItems.length; n++) {
-      if (logItems[n].id == i) logItems.splice(n, 1);
+    if (sure) {
+        // remove from tableItems
+        var elem = document.getElementById(i);
+        elem.parentNode.removeChild(elem);
+
+        // remove from local storage
+        var logItems = JSON.parse(localStorage.getItem("log"));
+        for (n = 0; n < logItems.length; n++) {
+          if (logItems[n].id == i) logItems.splice(n, 1);
+        }
+        localStorage.setItem("log", JSON.stringify(logItems));
     }
-    localStorage.setItem("log", JSON.stringify(logItems));
 }
 
 function logSession() {
 
     var d = new Date();
-    var M = d.getMonth();
-    var D = d.getDate();
+    var M = addZero(d.getMonth()+1);
+    var D = addZero(d.getDate());
     var Y = d.getFullYear();
 
-    var h = d.getHours();
-    var m = d.getMinutes();
-    var s = d.getSeconds();
+    var h = addZero(d.getHours());
+    var m = addZero(d.getMinutes());
+    var s = addZero(d.getSeconds());
 
     var carbs = document.getElementById('carbs').value,
         bg = document.getElementById('bg').value,
@@ -225,7 +234,7 @@ function logSession() {
         dose = document.getElementById('dose').value;
 
     // write log entry object
-    var dose = {dose:parseInt(dose), carbs:addCarbs(), bg:parseInt(bg), icr:parseInt(icr), isf:parseInt(isf), target:target, month:M, date:D, year:Y, hour:h, minute:m, second:s, id:String(M)+String(D)+String(Y)+String(h)+String(m)+String(s)};
+    var dose = {dose:parseInt(dose), carbs:addCarbs(), bg:parseInt(bg), icr:parseInt(icr), isf:parseInt(isf), target:target, month:M, date:D, year:Y, hour:h, minute:m, second:s, id:M+""+D+""+Y+""+h+""+m+""+s};
 
     var log = JSON.parse(localStorage.getItem("log"));
 
