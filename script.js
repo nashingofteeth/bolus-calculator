@@ -159,7 +159,7 @@ function parseLog(o) {
     var y = document.createElement("TR");
     y.setAttribute("id", "logHeader");
 
-    var headers = ['Dose', 'Carbs', 'BGL', 'ICR', 'ISF', 'Target', 'Time'];
+    var headers = ['Time', 'Dose', 'Carbs', 'BGL', 'ICR', 'ISF', 'Target'];
 
     for (item in headers) {
         var z = document.createElement("TH");
@@ -178,7 +178,7 @@ function parseLog(o) {
       y.setAttribute("class", "logItem");
       y.setAttribute("id", o[i].id);
 
-      var tableItems = [o[i].dose, o[i].carbs, o[i].bg, o[i].icr, o[i].isf, o[i].target, o[i].hour + ":" + o[i].minute + ":" + o[i].second + "\u000a" + o[i].month + "/" + o[i].date + "/" + String(o[i].year).substring(2), "<input type='button' onclick='deleteLogItem(this.parentNode.parentNode.id)' value='X'/>"];
+      var tableItems = [o[i].hour + ":" + o[i].minute + ":" + o[i].second + "\u000a" + o[i].month + "/" + o[i].date + "/" + String(o[i].year).substring(2), o[i].dose, o[i].carbs, o[i].bg, o[i].icr, o[i].isf, o[i].target, "<input type='button' onclick='deleteLogItem(this.parentNode.parentNode.id)' value='X'/>"];
 
       for (item in tableItems) {
           var z = document.createElement("TD");
