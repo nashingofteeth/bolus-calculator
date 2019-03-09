@@ -56,13 +56,15 @@ table, th, td {
   margin-bottom: 10vw;
 }
 table {
-  width: 70%;
+  width: 65%;
   margin-left:auto;
   margin-right:auto;
+  text-align: center;
 }
 th, td {
-  padding: 5px;
+  padding: 0.5vw;
   white-space: pre;
+  font-size: 4vw;
 }
 @media (min-width: 1000px) {
     body {
@@ -90,6 +92,10 @@ th, td {
     }
     table {
       float: right;
-      text-align: left;
+    }
+    th, td {
+      padding: 0.1vw;
+      white-space: pre;
+      font-size: 1.2vw;
     }
 }
