@@ -22,7 +22,8 @@ var icr = document.getElementById('icr').value,
 if ((icr == false && isf == false && target == false) || icr == false) document.getElementById('icr').focus();
 else if ((isf == false && target == false) || isf == false) document.getElementById('isf').focus();
 else if (target == false) document.getElementById('target').focus();
-// else document.getElementById('carb1').focus();
+else if (checkStacking()) document.getElementById('stacking').focus();
+else document.getElementById('carbs').focus();
 
 //add carb fields
 var carbI = 2;
@@ -112,7 +113,7 @@ setInterval(function() {
         document.getElementById('stacking').style.display = "none";
     }
 
-    document.getElementById('dose').value = Math.round(dose*100)/100;
+    document.getElementById('dose').value = Math.round(dose*10)/10;
 
 }, 100);
 
@@ -253,4 +254,9 @@ function clearFields() {
     var carbs = document.querySelectorAll('.carb');
     for (i = 0; i < carbs.length; i++) carbs[i].value = '';
     document.getElementById('bg').value = '';
+}
+
+function downloadLog() {
+    uri = "data:application/octet-stream," + encodeURIComponent(localStorage.getItem("log"));
+    location.href = uri;
 }
