@@ -22,14 +22,14 @@ var icr = document.getElementById('icr').value,
 if ((icr == false && isf == false && target == false) || icr == false) document.getElementById('icr').focus();
 else if ((isf == false && target == false) || isf == false) document.getElementById('isf').focus();
 else if (target == false) document.getElementById('target').focus();
-else document.getElementById('carb1').focus();
+// else document.getElementById('carb1').focus();
 
 //add carb fields
 var carbI = 2;
 var carbsA = ["carb1"];
 function addField() {
     document.getElementById('carbs').insertAdjacentHTML("beforeend",
-        "<input type='number' pattern='[0-9]*' inputmode='numeric' placeholder='carbs' class='carb' id='carb" +
+        "<input type='tel' pattern='[0-9]*' inputmode='numeric' placeholder='carbs' class='carb' id='carb" +
         carbI++ +
         "'>");
     document.getElementById("carb"+parseInt(carbI-1)).focus();
@@ -112,8 +112,7 @@ setInterval(function() {
         document.getElementById('stacking').style.display = "none";
     }
 
-    document.getElementById('dose').value = Math.round(dose);
-    document.getElementById('unrounded').innerHTML = dose;
+    document.getElementById('dose').value = Math.round(dose*100)/100;
 
 }, 100);
 
@@ -234,7 +233,7 @@ function logSession() {
         dose = document.getElementById('dose').value;
 
     // write log entry object
-    var dose = {dose:parseInt(dose), carbs:addCarbs(), bg:parseInt(bg), icr:parseInt(icr), isf:parseInt(isf), target:target, month:M, date:D, year:Y, hour:h, minute:m, second:s, id:M+""+D+""+Y+""+h+""+m+""+s};
+    var dose = {dose:parseInt(dose), carbs:addCarbs(), bg:parseInt(bg), icr:parseFloat(icr), isf:parseInt(isf), target:target, month:M, date:D, year:Y, hour:h, minute:m, second:s, id:M+""+D+""+Y+""+h+""+m+""+s};
 
     var log = JSON.parse(localStorage.getItem("log"));
 
@@ -247,6 +246,10 @@ function logSession() {
     parseLog(log);
 
     // clear fields
+    clearFields();
+}
+
+function clearFields() {
     var carbs = document.querySelectorAll('.carb');
     for (i = 0; i < carbs.length; i++) carbs[i].value = '';
     document.getElementById('bg').value = '';

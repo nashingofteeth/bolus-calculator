@@ -13,13 +13,6 @@ input {
 h1 {
     font-size: 8vw;
 }
-#unrounded {
-    color: lightgrey;
-    margin: -5vw 17vw 0 0;
-    display: block;
-    text-align: right;
-    height: .8vw;
-}
 #stacking {
     color: red;
     font-style: italic;
@@ -30,7 +23,7 @@ h1 {
     margin-right:auto;
     height: 5vw;
 }
-input[type=number] {
+input[type=tel] {
     text-align: center;
 }
 input[type=button] {
@@ -43,12 +36,20 @@ input[type=button]:active {
 table input[type=button] {
     width: 100%;
     height: 100%;
+    font-size: 4vw;
+    background: none;
+    color: red;
+}
+table input[type=button]:active {
+    background: none;
+    color: black;
 }
 #icr::placeholder, #isf::placeholder, #target::placeholder {
   color: red;
 }
 #dose {
-    font-style:italic;
+    font-style: italic;
+    text-align: center;
 }
 table, th, td {
   border: .2vw solid black;
@@ -80,10 +81,6 @@ th, td {
     }
     h1 {
         font-size: 2.5vw;
-    }
-    #unrounded {
-        margin: -2vw 1vw 0 0;
-        display: block;
     }
     #stacking {
         margin: 2vw 0 0 0;

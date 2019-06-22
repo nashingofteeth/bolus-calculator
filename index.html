@@ -3,8 +3,13 @@ Created by Matthew Nash, using information from this paper:
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4455388/
 -->
 
-<html lang="en" manifest="cache.appcache">
+<!-- <html lang="en" manifest="cache.appcache"> -->
+<!doctype html>
+<html>
     <head>
+        <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+        <meta content="utf-8" http-equiv="encoding">
+
         <link rel="apple-touch-icon" href="assets/apple_icon.png">
         <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon.png">
 
@@ -16,35 +21,36 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4455388/
         <p>
             <div id="carbs">
                 Meal (net carbs):
-                <input type='number' pattern='[0-9]*' inputmode='numeric' placeholder='carbs' class='carb' id='carb1'>
+                <input type="tel" pattern="[0-9]*" inputmode='numeric' placeholder='carbs' class='carb' id='carb1'>
             </div>
             <input type='button' tabindex="-1" id='add' onclick="addField()" value='+'>
         </p>
         <p>
             Current blood glucose level (mg/dL):
-            <input type="number" pattern="[0-9]*" inputmode="numeric" id="bg">
+            <input type="tel" pattern="[0-9]*" inputmode="numeric" id="bg" step="any">
         </p>
         <p>
             Recommended Bolus dose (units):
             <input type="number" tabindex="-1" id="dose">
-            <small id="unrounded"></small>
             <small id="stacking"></small>
         </p>
         <p>
             <input type="button" tabindex="-1" value="log dose" onclick="logSession()">
+            <br>
+            <input type="button" tabindex="-1" value="clear" onclick="clearFields()">
         </p>
         <h3>Settings:</h3>
         <p>
             ICR (carbs / unit):
-            <input type="number" pattern="[0-9]*" inputmode="numeric" id="icr" placeholder="required">
+            <input type="tel" pattern="[0-9]*" inputmode="decimal" id="icr" placeholder="required">
         </p>
         <p>
             ISF (mg/dL / unit):
-            <input type="number" pattern="[0-9]*" inputmode="numeric" id="isf" placeholder="required">
+            <input type="tel" pattern="[0-9]*" inputmode="numeric" id="isf" placeholder="required">
         </p>
         <p>
             Target blood glucose level (mg/dL):
-            <input type="number" pattern="[0-9]*" inputmode="numeric" id="target" placeholder="required">
+            <input type="tel" pattern="[0-9]*" inputmode="numeric" id="target" placeholder="required">
         </p>
         <h3>Log:</h3>
         <table id="log"></table>
