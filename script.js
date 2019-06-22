@@ -29,7 +29,7 @@ var carbI = 2;
 var carbsA = ["carb1"];
 function addField() {
     document.getElementById('carbs').insertAdjacentHTML("beforeend",
-        "<input type='number' pattern='\d*' inputmode='numeric' placeholder='carbs' class='carb' id='carb" +
+        "<input type='number' pattern='[0-9]*' placeholder='carbs' class='carb' id='carb" +
         carbI++ +
         "'>");
     document.getElementById("carb"+parseInt(carbI-1)).focus();
