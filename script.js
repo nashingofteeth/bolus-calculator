@@ -29,7 +29,7 @@ var carbI = 2;
 var carbsA = ["carb1"];
 function addField() {
     document.getElementById('carbs').insertAdjacentHTML("beforeend",
-        "<input type='tel' pattern='[0-9]*' inputmode='numeric' placeholder='carbs' class='carb' id='carb" +
+        "<input type='number' pattern='\d*' inputmode='numeric' placeholder='carbs' class='carb' id='carb" +
         carbI++ +
         "'>");
     document.getElementById("carb"+parseInt(carbI-1)).focus();
@@ -103,7 +103,7 @@ setInterval(function() {
     // check for stacking
     if (checkStacking()) {
         document.getElementById('dose').style.color = "orange";
-        document.getElementById('stacking').innerHTML = "To avoid insulin stacking, wait " + checkStacking() + " minutes before taking another dose.";
+        document.getElementById('stacking').innerHTML = "Insulin active for " + checkStacking() + " more minutes.";
         document.getElementById('stacking').style.display = "block";
     }
     else {

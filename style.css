@@ -23,7 +23,7 @@ h1 {
     margin-right:auto;
     height: 5vw;
 }
-input[type=tel] {
+input[type=number] {
     text-align: center;
 }
 input[type=button] {
@@ -69,6 +69,11 @@ th, td {
 }
 @media (min-width: 1000px) {
     body {
+        transform:scale(.4);
+        margin-top: -70vw;
+    }
+
+    /* body {
         margin: 3vw;
         font-size: 1.5vw;
         text-align: right;
@@ -77,13 +82,13 @@ th, td {
     input {
         width: 20vw;
         height: 4vw;
-        font-size: 2vw;
+        font-size: 2.3vw;
     }
     h1 {
         font-size: 2.5vw;
     }
     #stacking {
-        margin: 2vw 0 0 0;
+        margin: 1vw 0 0 0;
         height: 2.5vw;
         float: right;
     }
@@ -94,5 +99,5 @@ th, td {
       padding: 0.1vw;
       white-space: pre;
       font-size: 1.2vw;
-    }
+    } */
 }
