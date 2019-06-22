@@ -1,22 +1,23 @@
 body {
     margin: 0 0 0 0;
-    font-size: 4vw;
+    font-size: 3vw;
     text-align: center;
-    font-family: helvetica;
+    font-family: monospace;
 }
 input {
     width: 70vw;
-    height: 13vw;
-    font-size: 8vw;
+    height: 12vw;
+    font-size: 6.5vw;
     outline: none;
+    font-family: monospace;
 }
 h1 {
-    font-size: 8vw;
+    font-size: 7vw;
 }
 #stacking {
     color: red;
     font-style: italic;
-    display: block;
+    display: none;
     margin-top: 5vw;
     width: 70vw;
     margin-left:auto;
@@ -70,7 +71,7 @@ th, td {
 @media (min-width: 1000px) {
     body {
         transform:scale(.4);
-        margin-top: -70vw;
+        margin: -60vw 0 -60vw 0;
     }
 
     /* body {

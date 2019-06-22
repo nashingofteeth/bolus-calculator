@@ -22,7 +22,6 @@ var icr = document.getElementById('icr').value,
 if ((icr == false && isf == false && target == false) || icr == false) document.getElementById('icr').focus();
 else if ((isf == false && target == false) || isf == false) document.getElementById('isf').focus();
 else if (target == false) document.getElementById('target').focus();
-else if (checkStacking()) document.getElementById('stacking').focus();
 else document.getElementById('carbs').focus();
 
 //add carb fields
@@ -131,6 +130,10 @@ document.addEventListener('keydown', function (event) {
             carbsA.splice(fIndex, 1);
             field.parentNode.removeChild(field);
             document.getElementById(carbsA[fIndex-1]).focus();
+        }
+        else if (field.value == "" && fieldName == "bg") {
+            event.preventDefault();
+            document.getElementById(carbsA[carbsA.length-1]).focus();
         }
     }
 
