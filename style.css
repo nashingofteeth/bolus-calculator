@@ -70,8 +70,10 @@ th, td {
 }
 @media (min-width: 1000px) {
     body {
-        transform:scale(.4);
-        margin: -60vw 0 -60vw 0;
+        transform: scale(.4) translateY(-150vw);
+        margin: auto;
+        padding: auto;
+        /* margin: -60vw 0 -60vw 0; */
     }
 
     /* body {

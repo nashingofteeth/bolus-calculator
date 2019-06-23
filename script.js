@@ -46,26 +46,33 @@ function addCarbs() {
     return carbs;
 }
 
+function DiM (month) {
+    var Y = new Date().getFullYear();
+    return new Date(Y, month, 0).getDate();
+}
+
 function checkStacking() {
     if (!JSON.parse(localStorage.getItem("log")).length) return false;
     var d = new Date();
-    var M = (d.getMonth()+1) * 43800;
-    var D = d.getDate() * 1440;
-    var h = d.getHours() * 60;
+    var D = d.getDate();
+    var h = d.getHours();
     var m = d.getMinutes();
-    var thisTime = M + D + h + m;
+    var thisTime = (D*1440) + (h*60) + m;
 
     var logArray = JSON.parse(localStorage.getItem("log"));
-    var lastMonth = Number(logArray[logArray.length-1].month) * 43800;
-    var lastDay = Number(logArray[logArray.length-1].date) * 1440;
-    var lastHour = Number(logArray[logArray.length-1].hour) * 60;
+    var lastMonth = Number(logArray[logArray.length-1].month);
+    var lastDay = Number(logArray[logArray.length-1].date);
+    var lastHour = Number(logArray[logArray.length-1].hour);
     var lastMinute = Number(logArray[logArray.length-1].minute);
-    var lastTime = lastMonth + lastDay + lastHour + lastMinute;
+
+    if (lastDay == DiM(lastMonth) && D == 1) lastDay = 0;
+
+    var lastTime = (lastDay*1440) + (lastHour*60) + lastMinute;
 
     var threeHours = 180;
-    var diff = lastTime + threeHours;
+    var timeLeft = threeHours - (thisTime - lastTime);
 
-    if (diff >= thisTime) return threeHours - (thisTime - lastTime);
+    if (timeLeft <= 180 && timeLeft > 0) return timeLeft;
     else return false;
 }
 
