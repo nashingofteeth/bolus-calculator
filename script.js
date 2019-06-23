@@ -135,6 +135,10 @@ document.addEventListener('keydown', function (event) {
             event.preventDefault();
             document.getElementById(carbsA[carbsA.length-1]).focus();
         }
+        else if (field.value == "" && fieldName == "carb1") {
+            event.preventDefault();
+            document.getElementById('bg').focus();
+        }
     }
 
     //enter - create carb
