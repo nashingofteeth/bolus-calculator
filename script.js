@@ -46,6 +46,7 @@ function addCarbs() {
     return carbs;
 }
 
+// get # of days in month
 function DiM (month) {
     var Y = new Date().getFullYear();
     return new Date(Y, month, 0).getDate();
@@ -65,6 +66,7 @@ function checkStacking() {
     var lastHour = Number(logArray[logArray.length-1].hour);
     var lastMinute = Number(logArray[logArray.length-1].minute);
 
+    // check if bridging months
     if (lastDay == DiM(lastMonth) && D == 1) lastDay = 0;
 
     var lastTime = (lastDay*1440) + (lastHour*60) + lastMinute;
@@ -132,12 +134,13 @@ document.addEventListener('keydown', function (event) {
             field = document.getElementById(fieldName);
         if (field.value == "" && /carb/.test(fieldName) && fieldName != 'carb1') {
             event.preventDefault();
-            var fIndex = carbsA.indexOf(fieldName),
-                fieldId = fieldName[fieldName.length -1];
+            var fIndex = carbsA.indexOf(fieldName);
             carbsA.splice(fIndex, 1);
             field.parentNode.removeChild(field);
             document.getElementById(carbsA[fIndex-1]).focus();
         }
+
+        // switch between carbs and bgl
         else if (field.value == "" && fieldName == "bg") {
             event.preventDefault();
             document.getElementById(carbsA[carbsA.length-1]).focus();
@@ -260,13 +263,20 @@ function logSession() {
     localStorage.setItem("log", JSON.stringify(log));
     parseLog(log);
 
-    // clear fields
+    // clear inputs
     clearFields();
 }
 
 function clearFields() {
     var carbs = document.querySelectorAll('.carb');
-    for (i = 0; i < carbs.length; i++) carbs[i].value = '';
+    for (i = 0; i < carbs.length; i++) {
+        carbs[i].value = '';
+        if (i != 0) {
+            var fIndex = carbsA.indexOf(carbs[i]);
+            carbsA.splice(fIndex, 1);
+            carbs[i].parentNode.removeChild(carbs[i]);
+        }
+    }
     document.getElementById('bg').value = '';
 }
 
