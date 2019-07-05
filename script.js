@@ -248,7 +248,7 @@ function logSession() {
         icr = document.getElementById('icr').value,
         isf = document.getElementById('isf').value,
         target = parseInt(document.getElementById('target').value),
-        dose = document.getElementById('dose').value;
+        dose = Math.round(document.getElementById('dose').value);
 
     // write log entry object
     var dose = {dose:parseInt(dose), carbs:addCarbs(), bg:parseInt(bg), icr:parseFloat(icr), isf:parseInt(isf), target:target, month:M, date:D, year:Y, hour:h, minute:m, second:s, id:M+""+D+""+Y+""+h+""+m+""+s};
