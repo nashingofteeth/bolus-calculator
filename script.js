@@ -4,14 +4,9 @@ document.getElementById('isf').value = localStorage.getItem("isf");
 document.getElementById('target').value = localStorage.getItem("target");
 document.getElementById('carb1').value = localStorage.getItem("carbs");
 document.getElementById('bg').value = localStorage.getItem("bg");
-if (localStorage.getItem("log")) {
-    var logArray = JSON.parse(localStorage.getItem("log"));
-    parseLog(logArray);
-}
-else {
-    var logTemp = [];
-    localStorage.setItem("log", JSON.stringify(logTemp));
-    parseLog(logTemp);
+if (!localStorage.getItem("log")) {
+    var logInit = [];
+    localStorage.setItem("log", JSON.stringify(logInit));
 }
 
 var icr = document.getElementById('icr').value,
@@ -168,7 +163,7 @@ function addZero(i) {
   return i;
 }
 
-function parseLog(o) {
+function loadLog(o) {
     var log = document.getElementById("log");
     if (log.innerHTML) log.innerHTML = "";
 
@@ -261,7 +256,7 @@ function logSession() {
     // add log item
     log.push(dose);
     localStorage.setItem("log", JSON.stringify(log));
-    parseLog(log);
+    if(document.getElementById('log').innerHTML) loadLog(log);
 
     // clear inputs
     clearFields();

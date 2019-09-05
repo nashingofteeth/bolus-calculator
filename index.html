@@ -52,13 +52,13 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4455388/
             Target blood glucose (mg/dL):
             <input type="number" pattern="[0-9]*" id="target" placeholder="required">
         </p>
-        <h3>Log:</h3>
         <table id="log"></table>
 
+        <input style="margin-bottom: 30px" type="button" tabindex="-1" value="view log" onclick="loadLog(JSON.parse(localStorage.getItem('log')));this.parentNode.removeChild(this);">
         <input type="button" tabindex="-1" value="download log" onclick="downloadLog()">
         <br><br>
         <p>
-            Bolus Calculator (version 3.5)
+            Bolus Calculator (version 3.6)
         </p>
         <script src="script.js" type="text/javascript"></script>
     </body>

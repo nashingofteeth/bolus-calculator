@@ -55,7 +55,7 @@ table input[type=button]:active {
 table, th, td {
   border: .2vw solid black;
   border-collapse: collapse;
-  margin-bottom: 10vw;
+  margin: 5vw 0 5vw 0;
 }
 table {
   width: 65%;
