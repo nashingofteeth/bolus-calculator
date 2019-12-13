@@ -66,10 +66,10 @@ function checkStacking() {
 
     var lastTime = (lastDay*1440) + (lastHour*60) + lastMinute;
 
-    var threeHours = 180;
-    var timeLeft = threeHours - (thisTime - lastTime);
+    var activityLength = 300;
+    var timeLeft = activityLength - (thisTime - lastTime);
 
-    if (timeLeft <= 180 && timeLeft > 0) return timeLeft;
+    if (timeLeft <= activityLength && timeLeft > 0) return timeLeft;
     else return false;
 }
 
