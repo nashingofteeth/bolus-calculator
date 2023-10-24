@@ -276,6 +276,10 @@ function clearFields() {
 }
 
 function downloadLog() {
-    uri = "data:application/octet-stream," + encodeURIComponent(localStorage.getItem("log"));
-    location.href = uri;
+    const log = localStorage.getItem("log"),
+          uri = "data:text/json;charset=utf-8," + encodeURIComponent(log),
+          anchor = document.getElementById('download');
+    anchor.setAttribute("href", uri);
+    anchor.setAttribute("download", "data.json");
+    anchor.click();
 }
