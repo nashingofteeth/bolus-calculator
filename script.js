@@ -149,7 +149,7 @@ function checkRequired() {
     var required = [...document.querySelectorAll('.required')],
         valid = true;
     for (r in required) {
-        if ( !required[r].value ) {
+        if ( !required[r].value || required[r].value < required[r].min ) {
             required[r].classList.add('is-invalid');
             valid = false;
         }
