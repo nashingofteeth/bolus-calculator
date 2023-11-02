@@ -26,25 +26,24 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4455388/
                 <div class="mb-3">
                     <label for="carb1" class="form-label">Meal (net carbs):</label>
                     <div id="carbs" class="mb-2">
-                        <input type="number" class="carb form-control form-control-lg mb-2" pattern="[0-9]*" placeholder="carbs" id="carb1">
+                        <input type="number" class="carb form-control form-control-lg mb-2" pattern="[0-9]*" placeholder="carbs" id="carb1" disabled>
                     </div>
-                    <button class="btn btn-primary btn-lg w-100" type="button" tabindex="-1" id='add' onclick="addField()">+</button>
+                    <button class="btn btn-primary btn-lg w-100" type="button" tabindex="-1" id='add' onclick="addField()" disabled>+</button>
                 </div>
                 
                 <div class="mb-3">
                     <label for="bg" class="form-label">Current blood glucose (mg/dL):</label>
-                    <input type="number" class="form-control form-control-lg" pattern="[0-9]*" id="bg" step="any">
+                    <input type="number" class="form-control form-control-lg" pattern="[0-9]*" id="bg" step="any" disabled>
                 </div>
                 
                 <div class="mb-3">
-                    <label for="dose" class="form-label">Recommended number of units:</label>
-                    <input type="number" class="form-control form-control-lg" tabindex="-1" id="units" readonly>
-                    <div id="stacking" class="invalid-feedback"></div>
+                    <label for="units" class="form-label">Recommended number of units:</label>
+                    <input type="number" class="form-control form-control-lg" tabindex="-1" id="units" readonly disabled>
                 </div>
                 
-                <div class="mb-3 d-flex">
-                    <button class="btn btn-primary btn-lg w-100 me-1" type="button" tabindex="-1" onclick="logSession()">log dose</button>
-                    <button class="btn btn-primary btn-lg w-100 ms-1" type="button" tabindex="-1" onclick="clearFields()">clear</button>
+                <div class="mb-3">
+                    <button class="btn btn-primary btn-lg w-100 mb-2" id="log-btn" type="button" tabindex="-1" onclick="logSession()" disabled>log dose</button>
+                    <button class="btn btn-primary btn-lg w-100" type="button" tabindex="-1" onclick="clearFields()" disabled>clear</button>
                 </div>
             </div>
 
