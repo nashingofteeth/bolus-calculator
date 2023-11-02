@@ -100,6 +100,8 @@ function addField() {
     document.getElementById("carb" + carbI).focus();
     carbsA.push("carb" + carbI);
 };
+document.getElementById('add-btn').addEventListener('click', addField);
+
 
 function addCarbs() {
     var totalCarbs = 0,
@@ -144,6 +146,7 @@ function clearFields() {
     }
     document.getElementById('bg').value = '';
 }
+document.getElementById('clear-btn').addEventListener('click', clearFields);
 
 function checkRequired() {
     var required = [...document.querySelectorAll('.required')],
@@ -285,6 +288,10 @@ function loadLog(o) {
       document.getElementById(o[i].id).childNodes[7].innerHTML = document.getElementById(o[i].id).childNodes[7].innerText;
     }
 }
+document.getElementById('view-log-btn').addEventListener('click', function(e) {
+    loadLog(JSON.parse(localStorage.getItem('log')));
+    this.parentNode.removeChild(this);
+});
 
 function downloadLog() {
     const log = localStorage.getItem("log"),
@@ -294,6 +301,7 @@ function downloadLog() {
     anchor.setAttribute("download", "data.json");
     anchor.click();
 }
+document.getElementById('download-log-btn').addEventListener('click', downloadLog);
 
 function deleteLogItem(i) {
     var M = i.substring(0,2);
