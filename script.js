@@ -24,7 +24,7 @@
 setInterval(function() {
     // check for stacking
     if (checkStacking()) {
-        document.getElementById('log-btn').innerHTML = "last dose active for " + checkStacking() + " more minutes";
+        document.getElementById('log-btn').innerHTML = 'log dose<small class="badge fw-normal">(last dose ' + checkStacking() + ' ago)</small>';
         document.getElementById('log-btn').classList.remove("btn-primary");
         document.getElementById('log-btn').classList.add("btn-danger");
         document.getElementById('units').classList.remove("text-primary");
@@ -171,28 +171,22 @@ function checkRequired() {
 }
 
 function checkStacking() {
-    if (!JSON.parse(localStorage.getItem("log")).length) return false;
-    var d = new Date();
-    var D = d.getDate();
-    var h = d.getHours();
-    var m = d.getMinutes();
-    var thisTime = (D*1440) + (h*60) + m;
+    if (JSON.parse(localStorage.getItem("log")).length < 1) return false;
+    
+    var now = new Date().getTime(),
+        logArray = JSON.parse(localStorage.getItem("log")),
+        last = Number(logArray[logArray.length-1].datetime),
+        activityLength = 5 * 60 * 60 * 1000, // 5 hours
+        since = now - last,
+        seconds = new Date(since).getUTCSeconds(),
+        minutes = new Date(since).getUTCMinutes(),
+        hours = new Date(since).getUTCHours();
 
-    var logArray = JSON.parse(localStorage.getItem("log"));
-    var lastMonth = Number(logArray[logArray.length-1].month);
-    var lastDay = Number(logArray[logArray.length-1].date);
-    var lastHour = Number(logArray[logArray.length-1].hour);
-    var lastMinute = Number(logArray[logArray.length-1].minute);
+    if (hours) count = hours + '.' + Math.round(60/minutes) + 'h';
+    else if (minutes ) count = minutes + 'm';
+    else count = seconds + 's';
 
-    // check if bridging months
-    if (lastDay == DiM(lastMonth) && D == 1) lastDay = 0;
-
-    var lastTime = (lastDay*1440) + (lastHour*60) + lastMinute;
-
-    var activityLength = 300;
-    var timeLeft = activityLength - (thisTime - lastTime);
-
-    if (timeLeft <= activityLength && timeLeft > 0) return timeLeft;
+    if (since < activityLength) return count;
     else return false;
 }
 
@@ -205,23 +199,14 @@ function storeValues(carbs, bg, icr, isf, target) {
     else localStorage.setItem("carbs", carbs);
 }
 
-function logSession() {
-
-    var d = new Date();
-    var M = addZero(d.getMonth()+1);
-    var D = addZero(d.getDate());
-    var Y = d.getFullYear();
-
-    var h = addZero(d.getHours());
-    var m = addZero(d.getMinutes());
-    var s = addZero(d.getSeconds());
-
+function logDose() {
     var icr = document.getElementById('icr').value,
         isf = document.getElementById('isf').value,
         target = parseInt(document.getElementById('target').value),
         carbs = document.getElementById('carbs').value,
         bg = document.getElementById('bg').value ? document.getElementById('bg').value : target,
-        units = Math.round(document.getElementById('units').value);
+        units = Math.round(document.getElementById('units').value),
+        datetime = new Date().getTime();
 
     // write log entry object
     var entry = {
@@ -231,28 +216,21 @@ function logSession() {
         icr: parseFloat(icr),
         isf: parseInt(isf),
         target: target,
-        month: M,
-        date: D,
-        year: Y,
-        hour: h,
-        minute: m,
-        second: s,
-        id: M+""+D+""+Y+""+h+""+m+""+s
+        datetime: datetime
     };
 
     var log = JSON.parse(localStorage.getItem("log"));
 
-    // check if log item already exists
-    if (log.length && entry.id == log[log.length-1].id) return false;
-
     // add log item
     log.push(entry);
+    console.log(log);
     localStorage.setItem("log", JSON.stringify(log));
     if(document.getElementById('log').innerHTML) loadLog(log);
 
     // clear inputs
     clearFields();
 }
+document.getElementById('log-btn').addEventListener('click', logDose);
 
 function loadLog(o) {
     var log = document.getElementById("log");
@@ -283,7 +261,16 @@ function loadLog(o) {
       y.setAttribute("class", "logItem");
       y.setAttribute("id", o[i].id);
 
-      var tableItems = [o[i].hour + ":" + o[i].minute + ":" + o[i].second + "\u000a" + o[i].month + "/" + o[i].date + "/" + String(o[i].year).substring(2), o[i].units, o[i].carbs, o[i].bg, o[i].icr, o[i].isf, o[i].target, '<button class="btn btn-sm btn-danger bg-danger" type="button" onclick="deleteLogItem(this.parentNode.parentNode.id)">X</button>'];
+      var tableItems = [
+        o[i].datetime,
+        o[i].units,
+        o[i].carbs,
+        o[i].bg,
+        o[i].icr,
+        o[i].isf,
+        o[i].target,
+        '<button class="btn btn-sm btn-danger bg-danger" type="button" onclick="deleteLogItem(this.parentNode.parentNode.id)">X</button>'
+        ];
 
       for (item in tableItems) {
           var z = document.createElement("TD");
