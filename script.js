@@ -255,8 +255,10 @@ function loadLog(o) {
       y.setAttribute("class", "logItem");
       y.setAttribute("id", o[i].id);
 
+
+      date = new Date(o[i].datetime);
       var tableItems = [
-        o[i].datetime,
+        `${date.getFullYear()}/${addZero(date.getMonth())}/${addZero(date.getDate())} ${addZero(date.getHours())}:${addZero(date.getMinutes())}`,
         o[i].units,
         o[i].carbs,
         o[i].bg,
@@ -276,7 +278,7 @@ function loadLog(o) {
       log.appendChild(y);
 
       // convert delete link into html
-      document.getElementById(o[i].id).childNodes[7].innerHTML = document.getElementById(o[i].id).childNodes[7].innerText;
+      // document.getElementById(o[i].id).childNodes[7].innerHTML = document.getElementById(o[i].id).childNodes[7].innerText;
     }
 }
 document.getElementById('view-log-btn').addEventListener('click', function(e) {
@@ -314,4 +316,9 @@ function deleteLogItem(i) {
         }
         localStorage.setItem("log", JSON.stringify(logItems));
     }
+}
+
+function addZero(i) {
+  if (i < 10) {i = "0" + i}
+  return i;
 }
