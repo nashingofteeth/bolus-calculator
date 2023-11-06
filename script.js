@@ -55,22 +55,22 @@ setInterval(function() {
 document.addEventListener('keyup', function (event) {
     //backspace - delete carb
     if (event.keyCode == 8 || event.keyCode == 46) {
-        var fieldName = document.activeElement.id,
-            field = document.getElementById(fieldName);
-        if (field.value == "" && /carb/.test(fieldName) && fieldName != 'carb1') {
+        var fieldId = document.activeElement.id,
+            field = document.getElementById(fieldId),
+            fields = [...document.querySelectorAll('.carb')];
+
+        if (field.value == "" && /carb/.test(fieldId) && fieldId != 'carb1') {
             event.preventDefault();
-            var fIndex = carbsA.indexOf(fieldName);
-            carbsA.splice(fIndex, 1);
+            field.previousElementSibling.focus();
             field.parentNode.removeChild(field);
-            document.getElementById(carbsA[fIndex-1]).focus();
         }
 
         // switch between carbs and bgl
-        else if (field.value == "" && fieldName == "bg") {
+        else if (field.value == "" && fieldId == "bg") {
             event.preventDefault();
-            document.getElementById(carbsA[carbsA.length-1]).focus();
+            fields[fields.length-1].focus();
         }
-        else if (field.value == "" && fieldName == "carb1") {
+        else if (field.value == "" && fieldId == "carb1") {
             event.preventDefault();
             document.getElementById('bg').focus();
         }
@@ -78,8 +78,8 @@ document.addEventListener('keyup', function (event) {
 
     //enter - create carb
     if(event.keyCode == 13) {
-        var fieldName = document.activeElement.id;
-        if (/carb/.test(fieldName)) {
+        var fieldId = document.activeElement.id;
+        if (/carb/.test(fieldId)) {
             event.preventDefault();
             addField();
         }
@@ -87,16 +87,13 @@ document.addEventListener('keyup', function (event) {
 });
 
 //add carb fields
-var carbI = 1;
-var carbsA = ["carb1"];
 function addField() {
-    carbI++;
+    fieldNumber = [...document.querySelectorAll('.carb')].length + 1;
     document.getElementById('carbs').insertAdjacentHTML('beforeend',
         '<input type="number" class="carb form-control form-control-lg mb-2" pattern="[0-9]*" placeholder="carbs" class="carb" id="carb' +
-        carbI +
+        fieldNumber +
         '">');
-    document.getElementById("carb" + carbI).focus();
-    carbsA.push("carb" + carbI);
+    document.getElementById("carb" + fieldNumber).focus();
 };
 document.getElementById('add-btn').addEventListener('click', addField);
 
@@ -133,14 +130,10 @@ function calcUnits(carbs, bg, icr, isf, target) {
 }
 
 function clearFields() {
-    var carbs = document.querySelectorAll('.carb');
+    var carbs = [...document.querySelectorAll('.carb')];
     for (i = 0; i < carbs.length; i++) {
-        carbs[i].value = '';
-        if (i != 0) {
-            var fIndex = carbsA.indexOf(carbs[i]);
-            carbsA.splice(fIndex, 1);
-            carbs[i].parentNode.removeChild(carbs[i]);
-        }
+        if (i == 0) carbs[i].value = '';
+        else carbs[i].parentNode.removeChild(carbs[i]);
     }
     document.getElementById('bg').value = '';
 }
