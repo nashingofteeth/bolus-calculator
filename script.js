@@ -29,7 +29,6 @@ setInterval(function() {
         document.getElementById('log-btn').classList.add("btn-danger");
         document.getElementById('units').classList.remove("text-primary");
         document.getElementById('units').classList.add("text-danger");
-        // document.getElementById('stacking').classList.add('d-block');
     }
     else {
         document.getElementById('log-btn').innerHTML = "log dose";
@@ -37,7 +36,6 @@ setInterval(function() {
         document.getElementById('log-btn').classList.add("btn-primary");
         document.getElementById('units').classList.remove("text-danger");
         document.getElementById('units').classList.add("text-primary");
-        // document.getElementById('stacking').classList.remove('d-block');
     }
 
     var carbs = addCarbs(),
