@@ -315,16 +315,3 @@ function deleteLogItem(i) {
         localStorage.setItem("log", JSON.stringify(logItems));
     }
 }
-
-// get # of days in month
-function DiM (month) {
-    var Y = new Date().getFullYear();
-    return new Date(Y, month, 0).getDate();
-}
-
-function addZero(i) {
-  if (i < 10) {
-    i = "0" + i;
-  }
-  return i;
-}
