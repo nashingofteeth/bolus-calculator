@@ -217,7 +217,6 @@ function logDose() {
 
     // add log item
     log.push(entry);
-    console.log(log);
     localStorage.setItem("log", JSON.stringify(log));
     if(document.getElementById('log').innerHTML) loadLog(log);
 
@@ -230,56 +229,66 @@ function loadLog(o) {
     var log = document.getElementById("log");
     if (log.innerHTML) log.innerHTML = "";
     log.classList.remove('d-none');
+    
+    if (o.length < 1) {
+        log.innerHTML = '<span class="invalid-feedback d-block">No log items...</span>'
+        return;
+    }
 
     // create log headers
-    var y = document.createElement("TR");
-    y.setAttribute("id", "logHeader");
+    let thead = document.createElement("THEAD"),
+        tr = document.createElement("TR");
 
-    var headers = ['Time', 'Units', 'Carbs', 'BGL', 'ICR', 'ISF', 'Target'];
+    tr.setAttribute("id", "logHeader");
+    thead.appendChild(tr);
 
-    for (item in headers) {
-        var z = document.createElement("TH");
-        z.setAttribute("scope", "col");
-        var t = document.createTextNode(headers[item]);
-        z.appendChild(t);
-        y.appendChild(z);
+    var headCols = ['Date', 'Units', 'Carbs', 'BGL', 'ICR', 'ISF', 'Target', ''];
+
+    for (c in headCols) {
+        let th = document.createElement("TH"),
+            h = document.createTextNode(headCols[c]);
+
+        th.setAttribute("scope", "col");
+        th.appendChild(h);
+        tr.appendChild(th);
     }
-    if (o.length > 0) log.appendChild(y);
-    else log.innerHTML = '<span class="invalid-feedback d-block">No log items...</span>';
+
+    log.appendChild(thead);
 
     // populate log
     o.reverse();
-    for (i = 0; i < o.length; i++) {
+    var tbody = document.createElement("TBODY");
 
-      var y = document.createElement("TR");
-      y.setAttribute("class", "logItem");
-      y.setAttribute("id", o[i].id);
+    for (i in o) {
+        let tr = document.createElement("TR");
+        tr.setAttribute("class", "logItem");
+        tr.setAttribute("id", o[i].datetime);
 
-
-      date = new Date(o[i].datetime);
-      var tableItems = [
-        `${date.getFullYear()}/${addZero(date.getMonth())}/${addZero(date.getDate())} ${addZero(date.getHours())}:${addZero(date.getMinutes())}`,
-        o[i].units,
-        o[i].carbs,
-        o[i].bg,
-        o[i].icr,
-        o[i].isf,
-        o[i].target,
-        '<button class="btn btn-sm btn-danger bg-danger" type="button" onclick="deleteLogItem(this.parentNode.parentNode.id)">X</button>'
+        var bodyCols = [
+            formatDate(o[i].datetime),
+            o[i].units,
+            o[i].carbs,
+            o[i].bg,
+            o[i].icr,
+            o[i].isf,
+            o[i].target,
+            '<button class="delete-btn btn btn-sm p-1 btn-danger bg-danger" type="button">&times;</button>'
         ];
 
-      for (item in tableItems) {
-          var z = document.createElement("TD");
-          var t = document.createTextNode(tableItems[item]);
-          z.appendChild(t);
-          y.appendChild(z);
-      }
+        for (c in bodyCols) {
+            let td = document.createElement("TD");
+            td.innerHTML = bodyCols[c];
+            tr.appendChild(td);
+        }
 
-      log.appendChild(y);
+        tr.lastElementChild.firstElementChild.addEventListener('click', function(e) {
+            deleteLogItem(this.parentNode.parentNode.id);
+        });
 
-      // convert delete link into html
-      // document.getElementById(o[i].id).childNodes[7].innerHTML = document.getElementById(o[i].id).childNodes[7].innerText;
+        tbody.appendChild(tr)
     }
+
+    log.appendChild(tbody);
 }
 document.getElementById('view-log-btn').addEventListener('click', function(e) {
     loadLog(JSON.parse(localStorage.getItem('log')));
@@ -297,12 +306,7 @@ function downloadLog() {
 document.getElementById('download-log-btn').addEventListener('click', downloadLog);
 
 function deleteLogItem(i) {
-    var M = i.substring(0,2);
-    var D = i.substring(2,4);
-    var Y = i.substring(6,8);
-    var h = i.substring(10,8);
-    var m = i.substring(12,10);
-    var sure = confirm("You about to delete a log item created on " + M + "/" + D + "/" + Y + " at " + h + ":" + m + "." + "\nAre you sure?");
+    var sure = confirm("You about to delete a log item created at " + formatDate(parseInt(i)) + "." + "\nAre you sure?");
 
     if (sure) {
         // remove from tableItems
@@ -312,10 +316,25 @@ function deleteLogItem(i) {
         // remove from local storage
         var logItems = JSON.parse(localStorage.getItem("log"));
         for (n = 0; n < logItems.length; n++) {
-          if (logItems[n].id == i) logItems.splice(n, 1);
+          if (logItems[n].datetime == i) logItems.splice(n, 1);
         }
         localStorage.setItem("log", JSON.stringify(logItems));
     }
+}
+
+function formatDate(timestamp) {
+    var date = new Date(timestamp);
+    return `${
+        String(date.getFullYear()).slice(2, 4)
+    }/${
+        addZero(date.getMonth())
+    }/${
+        addZero(date.getDate())
+    } ${
+        addZero(date.getHours())
+    }:${
+        addZero(date.getMinutes())
+    }`;
 }
 
 function addZero(i) {
