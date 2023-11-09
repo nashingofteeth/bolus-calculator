@@ -10,46 +10,20 @@
         localStorage.setItem("log", JSON.stringify(logInit));
     }
 
+    checkFields();
+    displayStacking();
+
+    // set focus on relevant field
     var icr = document.getElementById('icr').value,
         isf = document.getElementById('isf').value,
         target = document.getElementById('target').value;
 
-    // set focus on relevant field
     if ((icr == false && isf == false && target == false) || icr == false) document.getElementById('icr').focus();
     else if ((isf == false && target == false) || isf == false) document.getElementById('isf').focus();
     else if (target == false) document.getElementById('target').focus();
     else document.getElementById('carb1').focus();
 })();
 
-setInterval(function() {
-    // check for stacking
-    if (checkStacking()) {
-        document.getElementById('log-btn').innerHTML = 'log dose<small class="badge fw-normal">(last dose ' + checkStacking() + ' ago)</small>';
-        document.getElementById('log-btn').classList.remove("btn-primary");
-        document.getElementById('log-btn').classList.add("btn-danger");
-        document.getElementById('units').classList.remove("text-primary");
-        document.getElementById('units').classList.add("text-danger");
-    }
-    else {
-        document.getElementById('log-btn').innerHTML = "log dose";
-        document.getElementById('log-btn').classList.remove("btn-danger");
-        document.getElementById('log-btn').classList.add("btn-primary");
-        document.getElementById('units').classList.remove("text-danger");
-        document.getElementById('units').classList.add("text-primary");
-    }
-
-    var carbs = addCarbs(),
-        bg = document.getElementById('bg').value,
-        icr = document.getElementById('icr').value,
-        isf = document.getElementById('isf').value,
-        target = document.getElementById('target').value;
-
-    storeValues(carbs, bg, icr, isf, target);
-
-    if ( checkRequired() )
-        calcUnits(carbs, bg, icr, isf, target);
-
-}, 100);
 
 // hotkeys
 document.addEventListener('keyup', function (event) {
@@ -84,7 +58,22 @@ document.addEventListener('keyup', function (event) {
             addField();
         }
     }
+
+    else checkFields();
 });
+
+function checkFields() {
+    var carbs = addCarbs(),
+        bg = document.getElementById('bg').value,
+        icr = document.getElementById('icr').value,
+        isf = document.getElementById('isf').value,
+        target = document.getElementById('target').value;
+
+    storeValues(carbs, bg, icr, isf, target);
+
+    if ( checkRequired() )
+        calcUnits(carbs, bg, icr, isf, target);
+}
 
 //add carb fields
 function addField() {
@@ -136,6 +125,7 @@ function clearFields() {
         else carbs[i].parentNode.removeChild(carbs[i]);
     }
     document.getElementById('bg').value = '';
+    checkFields();
 }
 document.getElementById('clear-btn').addEventListener('click', clearFields);
 
@@ -143,7 +133,8 @@ function checkRequired() {
     var required = [...document.querySelectorAll('.required')],
         valid = true;
     for (r in required) {
-        if ( !required[r].value || required[r].value < required[r].min ) {
+        console.log(required[r].min)
+        if ( !required[r].value || parseInt(required[r].value) < parseInt(required[r].min) ) {
             required[r].classList.add('is-invalid');
             valid = false;
         }
@@ -193,6 +184,24 @@ function storeValues(carbs, bg, icr, isf, target) {
     else localStorage.setItem("carbs", carbs);
 }
 
+function displayStacking() {
+    if (checkStacking()) {
+        document.getElementById('log-btn').innerHTML = 'log dose<small class="badge fw-normal position-static">(last dose ' + checkStacking() + ' ago)</small>';
+        document.getElementById('log-btn').classList.remove("btn-primary");
+        document.getElementById('log-btn').classList.add("btn-danger");
+        document.getElementById('units').classList.remove("text-primary");
+        document.getElementById('units').classList.add("text-danger");
+    }
+    else {
+        document.getElementById('log-btn').innerHTML = "log dose";
+        document.getElementById('log-btn').classList.remove("btn-danger");
+        document.getElementById('log-btn').classList.add("btn-primary");
+        document.getElementById('units').classList.remove("text-danger");
+        document.getElementById('units').classList.add("text-primary");
+    }
+}
+setInterval(displayStacking, 1000);
+
 function logDose() {
     var icr = document.getElementById('icr').value,
         isf = document.getElementById('isf').value,
@@ -222,6 +231,7 @@ function logDose() {
 
     // clear inputs
     clearFields();
+    displayStacking();
 }
 document.getElementById('log-btn').addEventListener('click', logDose);
 
