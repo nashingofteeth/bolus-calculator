@@ -38,16 +38,6 @@ document.addEventListener('keyup', function (event) {
             field.previousElementSibling.focus();
             field.parentNode.removeChild(field);
         }
-
-        // switch between carbs and bgl
-        else if (field.value == "" && fieldId == "bg") {
-            event.preventDefault();
-            fields[fields.length-1].focus();
-        }
-        else if (field.value == "" && fieldId == "carb1") {
-            event.preventDefault();
-            document.getElementById('bg').focus();
-        }
     }
 
     //enter - create carb
