@@ -5,10 +5,9 @@
     document.getElementById('target').value = localStorage.getItem("target");
     document.getElementById('carb1').value = localStorage.getItem("carbs");
     document.getElementById('bg').value = localStorage.getItem("bg");
-    if (!localStorage.getItem("log")) {
-        var logInit = [];
-        localStorage.setItem("log", JSON.stringify(logInit));
-    }
+
+    //initialize log
+    if (!localStorage.getItem("log")) localStorage.setItem("log", '[]');
 
     updateFields();
     displayStacking();
@@ -23,6 +22,17 @@
     else if (target == false) document.getElementById('target').focus();
     else document.getElementById('carb1').focus();
 })();
+
+//add carb fields
+function addField() {
+    fieldNumber = [...document.querySelectorAll('.carb')].length + 1;
+    document.getElementById('carbs').insertAdjacentHTML('beforeend',
+        '<input type="number" class="carb form-control form-control-lg mb-2" pattern="[0-9]*" placeholder="carbs" class="carb" id="carb' +
+        fieldNumber +
+        '">');
+    document.getElementById("carb" + fieldNumber).focus();
+};
+document.getElementById('add-btn').addEventListener('click', addField);
 
 document.addEventListener('keydown', function (event) {
     //backspace - delete carb
@@ -47,6 +57,17 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
+function clearFields() {
+    var carbs = [...document.querySelectorAll('.carb')];
+    for (i = 0; i < carbs.length; i++) {
+        if (i == 0) carbs[i].value = '';
+        else carbs[i].parentNode.removeChild(carbs[i]);
+    }
+    document.getElementById('bg').value = '';
+    updateFields();
+}
+document.getElementById('clear-btn').addEventListener('click', clearFields);
+
 function updateFields() {
     var carbs = addCarbs(),
         bg = document.getElementById('bg').value,
@@ -61,59 +82,14 @@ function updateFields() {
 }
 document.addEventListener('keyup', updateFields);
 
-//add carb fields
-function addField() {
-    fieldNumber = [...document.querySelectorAll('.carb')].length + 1;
-    document.getElementById('carbs').insertAdjacentHTML('beforeend',
-        '<input type="number" class="carb form-control form-control-lg mb-2" pattern="[0-9]*" placeholder="carbs" class="carb" id="carb' +
-        fieldNumber +
-        '">');
-    document.getElementById("carb" + fieldNumber).focus();
-};
-document.getElementById('add-btn').addEventListener('click', addField);
-
-
-function addCarbs() {
-    var totalCarbs = 0,
-        carbs = [...document.querySelectorAll('.carb')];
-    for (c in carbs) {
-        var carb = carbs[c].value;
-        if (!carb) carb = 0;
-        totalCarbs += parseInt(carb);
-    }
-
-    return totalCarbs;
+function storeValues(carbs, bg, icr, isf, target) {
+    localStorage.setItem("icr", icr);
+    localStorage.setItem("isf", isf);
+    localStorage.setItem("target", target);
+    localStorage.setItem("bg", bg);
+    if (!carbs) localStorage.setItem("carbs", "");
+    else localStorage.setItem("carbs", carbs);
 }
-
-function calcUnits(carbs, bg, icr, isf, target) {
-    var carbs = addCarbs(),
-        bg = parseInt(bg),
-        icr = parseFloat(icr),
-        isf = parseInt(isf),
-        target = parseInt(target);
-
-    // set current BGL placeholder
-    document.getElementById('bg').placeholder = "if > " + target;
-
-    //use ratios to calulate units
-    if (carbs && bg > target) var units = ((bg - target) / isf) + (carbs / icr);
-    else if (carbs) var units = carbs / icr;
-    else if (bg > target) var units = (bg - target) / isf;
-    else var units = 0;
-    
-    document.getElementById('units').value = Math.round(units*10)/10;
-}
-
-function clearFields() {
-    var carbs = [...document.querySelectorAll('.carb')];
-    for (i = 0; i < carbs.length; i++) {
-        if (i == 0) carbs[i].value = '';
-        else carbs[i].parentNode.removeChild(carbs[i]);
-    }
-    document.getElementById('bg').value = '';
-    updateFields();
-}
-document.getElementById('clear-btn').addEventListener('click', clearFields);
 
 function checkRequired() {
     var required = [...document.querySelectorAll('.required')],
@@ -137,61 +113,38 @@ function checkRequired() {
         document.getElementById('bg').placeholder = '';
         return false;
     }
-
 }
 
-function checkStacking() {
-    if (JSON.parse(localStorage.getItem("log")).length < 1) return false;
+function calcUnits(carbs, bg, icr, isf, target) {
+    var carbs = addCarbs(),
+        bg = parseInt(bg),
+        icr = parseFloat(icr),
+        isf = parseInt(isf),
+        target = parseInt(target);
+
+    // set current BGL placeholder
+    document.getElementById('bg').placeholder = "if > " + target;
+
+    //use ratios to calulate units
+    if (carbs && bg > target) var units = ((bg - target) / isf) + (carbs / icr);
+    else if (carbs) var units = carbs / icr;
+    else if (bg > target) var units = (bg - target) / isf;
+    else var units = 0;
     
-    var now = new Date().getTime(),
-        logArray = JSON.parse(localStorage.getItem("log")),
-        last = Number(logArray[logArray.length-1].datetime),
-        activityLength = 5 * 60 * 60 * 1000, // 5 hours
-        since = now - last,
-        seconds = new Date(since).getUTCSeconds(),
-        minutes = new Date(since).getUTCMinutes(),
-        hours = new Date(since).getUTCHours();
-
-    if (hours) count = hours + parseFloat((minutes/60).toFixed(1)) + 'h';
-    else if (minutes) {
-        count = minutes + 'm';
-        document.getElementById('log-btn').removeAttribute('disabled');
-    }
-    else {
-        count = seconds + 's';
-        document.getElementById('log-btn').setAttribute('disabled', '');
-    }
-
-    if (since < activityLength) return count;
-    else return false;
+    document.getElementById('units').value = Math.round(units*10)/10;
 }
 
-function storeValues(carbs, bg, icr, isf, target) {
-    localStorage.setItem("icr", icr);
-    localStorage.setItem("isf", isf);
-    localStorage.setItem("target", target);
-    localStorage.setItem("bg", bg);
-    if (!carbs) localStorage.setItem("carbs", "");
-    else localStorage.setItem("carbs", carbs);
-}
+function addCarbs() {
+    var totalCarbs = 0,
+        carbs = [...document.querySelectorAll('.carb')];
+    for (c in carbs) {
+        var carb = carbs[c].value;
+        if (!carb) carb = 0;
+        totalCarbs += parseInt(carb);
+    }
 
-function displayStacking() {
-    if (checkStacking()) {
-        document.getElementById('log-btn').innerHTML = 'log dose<small class="badge fw-normal position-static">(last dose ' + checkStacking() + ' ago)</small>';
-        document.getElementById('log-btn').classList.remove("btn-primary");
-        document.getElementById('log-btn').classList.add("btn-danger");
-        document.getElementById('units').classList.remove("text-primary");
-        document.getElementById('units').classList.add("text-danger");
-    }
-    else {
-        document.getElementById('log-btn').innerHTML = "log dose";
-        document.getElementById('log-btn').classList.remove("btn-danger");
-        document.getElementById('log-btn').classList.add("btn-primary");
-        document.getElementById('units').classList.remove("text-danger");
-        document.getElementById('units').classList.add("text-primary");
-    }
+    return totalCarbs;
 }
-setInterval(displayStacking, 1000);
 
 function logDose() {
     var icr = document.getElementById('icr').value,
@@ -226,8 +179,9 @@ function logDose() {
 }
 document.getElementById('log-btn').addEventListener('click', logDose);
 
-function loadLog(o) {
-    var log = document.getElementById("log");
+function loadLog() {
+    var o = JSON.parse(localStorage.getItem('log')),
+        log = document.getElementById("log");
     if (log.innerHTML) log.innerHTML = "";
     log.classList.remove('d-none');
     
@@ -292,36 +246,9 @@ function loadLog(o) {
     log.appendChild(tbody);
 }
 document.getElementById('view-log-btn').addEventListener('click', function(e) {
-    loadLog(JSON.parse(localStorage.getItem('log')));
+    loadLog();
     this.parentNode.removeChild(this);
 });
-
-function downloadLog() {
-    const log = localStorage.getItem("log"),
-          uri = "data:text/json;charset=utf-8," + encodeURIComponent(log),
-          anchor = document.getElementById('download');
-    anchor.setAttribute("href", uri);
-    anchor.setAttribute("download", "data.json");
-    anchor.click();
-}
-document.getElementById('download-log-btn').addEventListener('click', downloadLog);
-
-function deleteLogItem(i) {
-    var sure = confirm("You about to delete a log item created at " + formatDate(parseInt(i)) + "." + "\nAre you sure?");
-
-    if (sure) {
-        // remove from tableItems
-        var elem = document.getElementById(i);
-        elem.parentNode.removeChild(elem);
-
-        // remove from local storage
-        var logItems = JSON.parse(localStorage.getItem("log"));
-        for (n = 0; n < logItems.length; n++) {
-          if (logItems[n].datetime == i) logItems.splice(n, 1);
-        }
-        localStorage.setItem("log", JSON.stringify(logItems));
-    }
-}
 
 function formatDate(timestamp) {
     var date = new Date(timestamp),
@@ -354,3 +281,74 @@ function addZero(i) {
   if (i < 10) {i = "0" + i}
   return i;
 }
+
+function deleteLogItem(i) {
+    var sure = confirm("You about to delete a log item created at " + formatDate(parseInt(i)) + "." + "\nAre you sure?");
+
+    if (sure) {
+        // remove from tableItems
+        var elem = document.getElementById(i);
+        elem.parentNode.removeChild(elem);
+
+        // remove from local storage
+        var logItems = JSON.parse(localStorage.getItem("log"));
+        for (n = 0; n < logItems.length; n++) {
+          if (logItems[n].datetime == i) logItems.splice(n, 1);
+        }
+        localStorage.setItem("log", JSON.stringify(logItems));
+    }
+}
+
+function downloadLog() {
+    const log = localStorage.getItem("log"),
+          uri = "data:text/json;charset=utf-8," + encodeURIComponent(log),
+          anchor = document.getElementById('download');
+    anchor.setAttribute("href", uri);
+    anchor.setAttribute("download", "data.json");
+    anchor.click();
+}
+document.getElementById('download-log-btn').addEventListener('click', downloadLog);
+
+function checkStacking() {
+    if (JSON.parse(localStorage.getItem("log")).length < 1) return false;
+    
+    var now = new Date().getTime(),
+        logArray = JSON.parse(localStorage.getItem("log")),
+        last = Number(logArray[logArray.length-1].datetime),
+        activityLength = 5 * 60 * 60 * 1000, // 5 hours
+        since = now - last,
+        seconds = new Date(since).getUTCSeconds(),
+        minutes = new Date(since).getUTCMinutes(),
+        hours = new Date(since).getUTCHours();
+
+    if (hours) count = hours + parseFloat((minutes/60).toFixed(1)) + 'h';
+    else if (minutes) {
+        count = minutes + 'm';
+        document.getElementById('log-btn').removeAttribute('disabled');
+    }
+    else {
+        count = seconds + 's';
+        document.getElementById('log-btn').setAttribute('disabled', '');
+    }
+
+    if (since < activityLength) return count;
+    else return false;
+}
+
+function displayStacking() {
+    if (checkStacking()) {
+        document.getElementById('log-btn').innerHTML = 'log dose<small class="badge fw-normal position-static">(last dose ' + checkStacking() + ' ago)</small>';
+        document.getElementById('log-btn').classList.remove("btn-primary");
+        document.getElementById('log-btn').classList.add("btn-danger");
+        document.getElementById('units').classList.remove("text-primary");
+        document.getElementById('units').classList.add("text-danger");
+    }
+    else {
+        document.getElementById('log-btn').innerHTML = "log dose";
+        document.getElementById('log-btn').classList.remove("btn-danger");
+        document.getElementById('log-btn').classList.add("btn-primary");
+        document.getElementById('units').classList.remove("text-danger");
+        document.getElementById('units').classList.add("text-primary");
+    }
+}
+setInterval(displayStacking, 1000);
