@@ -156,7 +156,7 @@ function checkStacking() {
         minutes = new Date(since).getUTCMinutes(),
         hours = new Date(since).getUTCHours();
 
-    if (hours) count = hours + '.' + Math.round(minutes/60) + 'h';
+    if (hours) count = hours + parseFloat((minutes/60).toFixed(1)) + 'h';
     else if (minutes ) count = minutes + 'm';
     else count = seconds + 's';
 
