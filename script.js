@@ -346,7 +346,7 @@ function formatDate(timestamp) {
     }/${
         addZero(days)
     } ${
-        addZero(hours)
+        hours
     }:${
         addZero(minutes)
     } ${
