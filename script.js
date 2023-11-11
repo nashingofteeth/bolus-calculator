@@ -123,7 +123,6 @@ function checkRequired() {
     var required = [...document.querySelectorAll('.required')],
         valid = true;
     for (r in required) {
-        console.log(required[r].min)
         if ( !required[r].value || parseInt(required[r].value) < parseInt(required[r].min) ) {
             required[r].classList.add('is-invalid');
             valid = false;
@@ -157,7 +156,7 @@ function checkStacking() {
         minutes = new Date(since).getUTCMinutes(),
         hours = new Date(since).getUTCHours();
 
-    if (hours) count = hours + '.' + Math.round(60/minutes) + 'h';
+    if (hours) count = hours + '.' + Math.round(minutes/60) + 'h';
     else if (minutes ) count = minutes + 'm';
     else count = seconds + 's';
 
