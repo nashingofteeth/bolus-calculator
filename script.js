@@ -10,7 +10,7 @@
         localStorage.setItem("log", JSON.stringify(logInit));
     }
 
-    checkFields();
+    updateFields();
     displayStacking();
 
     // set focus on relevant field
@@ -24,9 +24,7 @@
     else document.getElementById('carb1').focus();
 })();
 
-
-// hotkeys
-document.addEventListener('keyup', function (event) {
+document.addEventListener('keydown', function (event) {
     //backspace - delete carb
     if (event.keyCode == 8 || event.keyCode == 46) {
         var fieldId = document.activeElement.id,
@@ -39,7 +37,6 @@ document.addEventListener('keyup', function (event) {
             field.parentNode.removeChild(field);
         }
     }
-
     //enter - create carb
     if(event.keyCode == 13) {
         var fieldId = document.activeElement.id;
@@ -48,11 +45,9 @@ document.addEventListener('keyup', function (event) {
             addField();
         }
     }
-
-    else checkFields();
 });
 
-function checkFields() {
+function updateFields() {
     var carbs = addCarbs(),
         bg = document.getElementById('bg').value,
         icr = document.getElementById('icr').value,
@@ -64,6 +59,7 @@ function checkFields() {
     if ( checkRequired() )
         calcUnits(carbs, bg, icr, isf, target);
 }
+document.addEventListener('keyup', updateFields);
 
 //add carb fields
 function addField() {
@@ -115,7 +111,7 @@ function clearFields() {
         else carbs[i].parentNode.removeChild(carbs[i]);
     }
     document.getElementById('bg').value = '';
-    checkFields();
+    updateFields();
 }
 document.getElementById('clear-btn').addEventListener('click', clearFields);
 
