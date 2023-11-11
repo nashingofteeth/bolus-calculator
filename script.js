@@ -328,17 +328,29 @@ function deleteLogItem(i) {
 }
 
 function formatDate(timestamp) {
-    var date = new Date(timestamp);
+    var date = new Date(timestamp),
+        years = String(date.getFullYear()).slice(2, 4),
+        months = date.getMonth() + 1,
+        days = date.getDate(),
+        hours = date.getHours(),
+        minutes = date.getMinutes(),
+        ampm = hours >= 12 ? 'pm' : 'am';
+
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
     return `${
-        String(date.getFullYear()).slice(2, 4)
+        years
     }/${
-        addZero(date.getMonth())
+        addZero(months)
     }/${
-        addZero(date.getDate())
+        addZero(days)
     } ${
-        addZero(date.getHours())
+        addZero(hours)
     }:${
-        addZero(date.getMinutes())
+        addZero(minutes)
+    } ${
+        ampm
     }`;
 }
 
