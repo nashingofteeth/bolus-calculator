@@ -1,7 +1,7 @@
 (function() {
     // load local storage
-    storedValues = [...document.querySelectorAll('.term')];
-    for (s in storedValues) document.getElementById(storedValues[s].id).value = localStorage.getItem(storedValues[s].id);
+    var storedValues = [...document.querySelectorAll('.term')];
+    for (s in storedValues) storedValues[s].value = localStorage.getItem(storedValues[s].id);
 
     //initialize log
     if (!localStorage.getItem("log")) localStorage.setItem("log", '[]');
@@ -61,7 +61,7 @@ function clearFields() {
         else carbs[i].parentNode.removeChild(carbs[i]);
     }
     document.getElementById('bg').value = '';
-    
+
     updateFields();
 }
 document.getElementById('clear-btn').addEventListener('click', clearFields);
@@ -75,9 +75,9 @@ function updateFields() {
 document.addEventListener('keyup', updateFields);
 
 function storeValues() {
-    storedValues = [...document.querySelectorAll('.term')];
+    var storedValues = [...document.querySelectorAll('.term')];
     for (s in storedValues) {
-        var value = document.getElementById(storedValues[s].id).value;
+        var value = storedValues[s].value;
         if (storedValues[s].id == 'carbs') value = addCarbs();
         localStorage.setItem(storedValues[s].id, value);
     }
