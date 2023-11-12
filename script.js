@@ -345,18 +345,9 @@ function checkStacking() {
         hours = new Date(since).getUTCHours();
 
     var count = '';
-    if (hours) {
-        count = hours + parseFloat((minutes/60).toFixed(1)) + 'h';
-        document.getElementById('log-btn').removeAttribute('disabled');
-    }
-    else if (minutes) {
-        count = minutes + 'm';
-        document.getElementById('log-btn').removeAttribute('disabled');
-    }
-    else {
-        count = seconds + 's';
-        document.getElementById('log-btn').setAttribute('disabled', '');
-    }
+    if (hours) count = hours + parseFloat((minutes/60).toFixed(1)) + 'h';
+    else if (minutes) count = minutes + 'm';
+    else count = seconds + 's';
 
     if (since < activityLength) return count;
     else return false;
