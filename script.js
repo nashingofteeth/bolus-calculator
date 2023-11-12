@@ -1,7 +1,13 @@
 (function() {
     // load local storage
-    var storedValues = [...document.querySelectorAll('.term')];
+    var storedValues = [...document.querySelectorAll('.store')];
     for (s in storedValues) storedValues[s].value = localStorage.getItem(storedValues[s].id);
+
+    // restore Obsidian save switch state
+    if (localStorage.getItem('obsidian') == 'true') {
+        document.getElementById('obsidian-switch').checked = true;
+        document.getElementById('obsidian-vault').parentNode.classList.remove('fade');
+    }
 
     //initialize log
     if (!localStorage.getItem("log")) localStorage.setItem("log", '[]');
@@ -75,7 +81,7 @@ function updateFields() {
 document.addEventListener('keyup', updateFields);
 
 function storeValues() {
-    var storedValues = [...document.querySelectorAll('.term')];
+    var storedValues = [...document.querySelectorAll('.store')];
     for (s in storedValues) {
         var value = storedValues[s].value;
         if (storedValues[s].id == 'carbs') value = addCarbs();
@@ -85,17 +91,17 @@ function storeValues() {
 
 function checkRequired() {
     var required = [...document.querySelectorAll('.required')],
-        valid = true;
+        hasTerms = true;
     for (r in required) {
         if ( !required[r].value || parseInt(required[r].value) < parseInt(required[r].min) ) {
             required[r].classList.add('is-invalid');
-            valid = false;
+            if (required[r].classList.contains('term')) hasTerms = false;
         }
         else required[r].classList.remove('is-invalid');
     }
 
     var elems = [...document.querySelectorAll('.dose .form-control, .dose .btn')];
-    if ( valid ) {
+    if ( hasTerms ) {
         for (e in elems) elems[e].removeAttribute('disabled');
         return true;
     }
@@ -151,13 +157,13 @@ function logDose() {
 
     // write log entry object
     var entry = {
+        datetime: datetime,
         units: units,
         carbs: carbs,
         bg: bg,
         icr: icr,
         isf: isf,
-        target: target,
-        datetime: datetime
+        target: target
     };
 
     var log = JSON.parse(localStorage.getItem("log"));
@@ -169,8 +175,32 @@ function logDose() {
 
     clearFields();
     displayStacking();
+
+    if (document.getElementById('obsidian-switch').checked) saveToObsidian(entry);
 }
 document.getElementById('log-btn').addEventListener('click', logDose);
+
+function saveToObsidian(entry) {
+    var datetime = new Date(entry.datetime),
+        vault = encodeURI(document.getElementById('obsidian-vault').value),
+        file = datetime.getFullYear() + '-' + (datetime.getMonth() + 1) + '-' + datetime.getDate();
+
+    entry['datetime'] = datetime.getHours() + ':' + datetime.getMinutes();
+
+    var content = encodeURI('\n' + Object.values(entry).join(' | '));
+    uri = `obsidian://new?vault=${vault}&file=bolus%20log/${file}&content=${content}&append`;
+    window.location.href = uri;
+}
+
+function switchObsidian() {
+    var checked = document.getElementById('obsidian-switch').checked
+        vault = document.getElementById('obsidian-vault');
+    localStorage.setItem("obsidian", checked);
+
+    if (checked) vault.parentNode.classList.remove('fade');
+    else vault.parentNode.classList.add('fade');
+}
+document.getElementById('obsidian-switch').addEventListener('click', switchObsidian);
 
 function loadLog() {
     var o = JSON.parse(localStorage.getItem('log')),
