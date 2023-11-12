@@ -46,8 +46,8 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4455388/
                 </div>
             </div>
 
-            <h2>Settings</h2>
             <div class="settings">
+                <h2>Settings</h2>
                 <div class="mb-3">
                     <label for="icr" class="form-label">ICR (carbs / unit):</label>
                     <input type="number" class="form-control form-control-lg required term" id="icr">
@@ -62,18 +62,22 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4455388/
                 </div>
             </div>
 
-            <h2>Log</h2>
-            <table id="log" class="table table-striped table-bordered table-sm align-middle small d-none"></table>
+            <div class="log">
+                <h2>Log</h2>
+                <table id="log" class="table table-striped table-bordered table-sm align-middle small d-none"></table>
 
-            <div class="mb-3 d-flex">
-                <button class="btn btn-primary w-100 me-2" id="view-log-btn" type="button" tabindex="-1">view log</button>
-                <button class="btn btn-primary w-100" id="download-log-btn" type="button" tabindex="-1">download log</button>
+                <div class="mb-3 d-flex">
+                    <button class="btn btn-primary w-100 me-2" id="view-log-btn" type="button" tabindex="-1">view log</button>
+                    <button class="btn btn-primary w-100" id="download-log-btn" type="button" tabindex="-1">download log</button>
+                </div>
             </div>
+
             <footer class="small">
                 Bolus Calculator (version 4.1.8)
             </footer>
-            <script src="script.js" type="text/javascript"></script>
             <a id="download" class="d-none"></a>
         </div>
+        
+        <script src="script.js" type="text/javascript"></script>
     </body>
 </html>
