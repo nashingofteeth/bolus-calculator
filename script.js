@@ -22,7 +22,7 @@
 
 //add carb fields
 function addField() {
-    fieldNumber = [...document.querySelectorAll('.carb')].length + 1;
+    var fieldNumber = [...document.querySelectorAll('.carb')].length + 1;
     document.getElementById('carbs').parentNode.insertAdjacentHTML('beforeend',
         '<input type="number" class="carb form-control form-control-lg mb-2" pattern="[0-9]*" placeholder="carbs" class="carb" id="carbs' +
         fieldNumber +
@@ -314,6 +314,7 @@ function checkStacking() {
         minutes = new Date(since).getUTCMinutes(),
         hours = new Date(since).getUTCHours();
 
+    var count = '';
     if (hours) count = hours + parseFloat((minutes/60).toFixed(1)) + 'h';
     else if (minutes) {
         count = minutes + 'm';
