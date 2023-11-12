@@ -143,19 +143,19 @@ function addCarbs() {
 function logDose() {
     var icr = document.getElementById('icr').value,
         isf = document.getElementById('isf').value,
-        target = parseInt(document.getElementById('target').value),
-        carbs = document.getElementById('carbs').value,
-        bg = document.getElementById('bg').value ? document.getElementById('bg').value : target,
+        target = document.getElementById('target').value,
+        carbs = addCarbs() || 0,
+        bg = document.getElementById('bg').value || target,
         units = Math.round(document.getElementById('units').value),
         datetime = new Date().getTime();
 
     // write log entry object
     var entry = {
-        units: parseInt(units),
-        carbs: addCarbs(),
-        bg: parseInt(bg),
-        icr: parseFloat(icr),
-        isf: parseInt(isf),
+        units: units,
+        carbs: carbs,
+        bg: bg,
+        icr: icr,
+        isf: isf,
         target: target,
         datetime: datetime
     };
@@ -167,7 +167,6 @@ function logDose() {
     localStorage.setItem("log", JSON.stringify(log));
     if(document.getElementById('log').innerHTML) loadLog(log);
 
-    // clear inputs
     clearFields();
     displayStacking();
 }
