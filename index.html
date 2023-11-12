@@ -23,16 +23,16 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4455388/
                 <h2>Dose</h2>
 
                 <div class="mb-3">
-                    <label for="carb1" class="form-label">Meal (net carbs):</label>
-                    <div id="carbs" class="mb-2">
-                        <input type="number" class="carb form-control form-control-lg mb-2" pattern="[0-9]*" placeholder="carbs" id="carb1" disabled>
+                    <label for="carbs" class="form-label">Meal (net carbs):</label>
+                    <div class="mb-2">
+                        <input type="number" class="carb form-control form-control-lg mb-2 term" pattern="[0-9]*" placeholder="carbs" id="carbs" disabled>
                     </div>
                     <button class="btn btn-primary btn-lg w-100" id="add-btn" type="button" tabindex="-1" id='add' disabled>+</button>
                 </div>
                 
                 <div class="mb-3">
                     <label for="bg" class="form-label">Current blood glucose (mg/dL):</label>
-                    <input type="number" class="form-control form-control-lg" pattern="[0-9]*" id="bg" step="any" disabled>
+                    <input type="number" class="form-control form-control-lg term" pattern="[0-9]*" id="bg" step="any" disabled>
                 </div>
                 
                 <div class="mb-3">
@@ -50,15 +50,15 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4455388/
             <div class="settings">
                 <div class="mb-3">
                     <label for="icr" class="form-label">ICR (carbs / unit):</label>
-                    <input type="number" class="form-control form-control-lg required" id="icr">
+                    <input type="number" class="form-control form-control-lg required term" id="icr">
                 </div>
                 <div class="mb-3">
                     <label for="isf" class="form-label">ISF (mg/dL / unit):</label>
-                    <input type="number" class="form-control form-control-lg required" pattern="[0-9]*" id="isf">
+                    <input type="number" class="form-control form-control-lg required term" pattern="[0-9]*" id="isf">
                 </div>
                 <div class="mb-3">
                     <label for="target" class="form-label">Target blood glucose (mg/dL):</label>
-                    <input type="number" class="form-control form-control-lg required" pattern="[0-9]*" min="70" id="target">
+                    <input type="number" class="form-control form-control-lg required term" pattern="[0-9]*" min="70" id="target">
                 </div>
             </div>
 

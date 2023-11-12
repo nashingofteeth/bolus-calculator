@@ -1,10 +1,7 @@
 (function() {
     // load local storage
-    document.getElementById('icr').value = localStorage.getItem("icr");
-    document.getElementById('isf').value = localStorage.getItem("isf");
-    document.getElementById('target').value = localStorage.getItem("target");
-    document.getElementById('carb1').value = localStorage.getItem("carbs");
-    document.getElementById('bg').value = localStorage.getItem("bg");
+    storedValues = [...document.querySelectorAll('.term')];
+    for (s in storedValues) document.getElementById(storedValues[s].id).value = localStorage.getItem(storedValues[s].id);
 
     //initialize log
     if (!localStorage.getItem("log")) localStorage.setItem("log", '[]');
@@ -20,17 +17,17 @@
     if ((icr == false && isf == false && target == false) || icr == false) document.getElementById('icr').focus();
     else if ((isf == false && target == false) || isf == false) document.getElementById('isf').focus();
     else if (target == false) document.getElementById('target').focus();
-    else document.getElementById('carb1').focus();
+    else document.getElementById('carbs').focus();
 })();
 
 //add carb fields
 function addField() {
     fieldNumber = [...document.querySelectorAll('.carb')].length + 1;
-    document.getElementById('carbs').insertAdjacentHTML('beforeend',
-        '<input type="number" class="carb form-control form-control-lg mb-2" pattern="[0-9]*" placeholder="carbs" class="carb" id="carb' +
+    document.getElementById('carbs').parentNode.insertAdjacentHTML('beforeend',
+        '<input type="number" class="carb form-control form-control-lg mb-2" pattern="[0-9]*" placeholder="carbs" class="carb" id="carbs' +
         fieldNumber +
         '">');
-    document.getElementById("carb" + fieldNumber).focus();
+    document.getElementById("carbs" + fieldNumber).focus();
 };
 document.getElementById('add-btn').addEventListener('click', addField);
 
@@ -41,7 +38,7 @@ document.addEventListener('keydown', function (event) {
             field = document.getElementById(fieldId),
             fields = [...document.querySelectorAll('.carb')];
 
-        if (field.value == "" && /carb/.test(fieldId) && fieldId != 'carb1') {
+        if (field.value == "" && /carb/.test(fieldId) && fieldId != 'carbs') {
             event.preventDefault();
             field.previousElementSibling.focus();
             field.parentNode.removeChild(field);
@@ -59,36 +56,31 @@ document.addEventListener('keydown', function (event) {
 
 function clearFields() {
     var carbs = [...document.querySelectorAll('.carb')];
-    for (i = 0; i < carbs.length; i++) {
+    for (i in carbs) {
         if (i == 0) carbs[i].value = '';
         else carbs[i].parentNode.removeChild(carbs[i]);
     }
     document.getElementById('bg').value = '';
+    
     updateFields();
 }
 document.getElementById('clear-btn').addEventListener('click', clearFields);
 
 function updateFields() {
-    var carbs = addCarbs(),
-        bg = document.getElementById('bg').value,
-        icr = document.getElementById('icr').value,
-        isf = document.getElementById('isf').value,
-        target = document.getElementById('target').value;
-
-    storeValues(carbs, bg, icr, isf, target);
+    storeValues();
 
     if ( checkRequired() )
-        calcUnits(carbs, bg, icr, isf, target);
+        calcUnits();
 }
 document.addEventListener('keyup', updateFields);
 
-function storeValues(carbs, bg, icr, isf, target) {
-    localStorage.setItem("icr", icr);
-    localStorage.setItem("isf", isf);
-    localStorage.setItem("target", target);
-    localStorage.setItem("bg", bg);
-    if (!carbs) localStorage.setItem("carbs", "");
-    else localStorage.setItem("carbs", carbs);
+function storeValues() {
+    storedValues = [...document.querySelectorAll('.term')];
+    for (s in storedValues) {
+        var value = document.getElementById(storedValues[s].id).value;
+        if (storedValues[s].id == 'carbs') value = addCarbs();
+        localStorage.setItem(storedValues[s].id, value);
+    }
 }
 
 function checkRequired() {
@@ -115,12 +107,12 @@ function checkRequired() {
     }
 }
 
-function calcUnits(carbs, bg, icr, isf, target) {
+function calcUnits() {
     var carbs = addCarbs(),
-        bg = parseInt(bg),
-        icr = parseFloat(icr),
-        isf = parseInt(isf),
-        target = parseInt(target);
+        bg = parseInt(document.getElementById('bg').value),
+        icr = parseFloat(document.getElementById('icr').value),
+        isf = parseInt(document.getElementById('isf').value),
+        target = parseInt(document.getElementById('target').value);
 
     // set current BGL placeholder
     document.getElementById('bg').placeholder = "if > " + target;
@@ -142,6 +134,8 @@ function addCarbs() {
         if (!carb) carb = 0;
         totalCarbs += parseInt(carb);
     }
+
+    totalCarbs = totalCarbs == 0 ? '' : totalCarbs;
 
     return totalCarbs;
 }
@@ -292,7 +286,7 @@ function deleteLogItem(i) {
 
         // remove from local storage
         var logItems = JSON.parse(localStorage.getItem("log"));
-        for (n = 0; n < logItems.length; n++) {
+        for (n in logItems) {
           if (logItems[n].datetime == i) logItems.splice(n, 1);
         }
         localStorage.setItem("log", JSON.stringify(logItems));
