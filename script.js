@@ -315,7 +315,10 @@ function checkStacking() {
         hours = new Date(since).getUTCHours();
 
     var count = '';
-    if (hours) count = hours + parseFloat((minutes/60).toFixed(1)) + 'h';
+    if (hours) {
+        count = hours + parseFloat((minutes/60).toFixed(1)) + 'h';
+        document.getElementById('log-btn').removeAttribute('disabled');
+    }
     else if (minutes) {
         count = minutes + 'm';
         document.getElementById('log-btn').removeAttribute('disabled');
