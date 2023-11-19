@@ -23,7 +23,6 @@
     if ((icr == false && isf == false && target == false) || icr == false) document.getElementById('icr').focus();
     else if ((isf == false && target == false) || isf == false) document.getElementById('isf').focus();
     else if (target == false) document.getElementById('target').focus();
-    else document.getElementById('carbs').focus();
 })();
 
 //add carb fields
