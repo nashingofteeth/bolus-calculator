@@ -61,16 +61,6 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4455388/
                     <label for="target" class="form-label">Target blood glucose (mg/dL):</label>
                     <input type="number" class="form-control form-control-lg required term store" pattern="[0-9]*" min="70" id="target">
                 </div>
-                
-                <div class="obsidian d-flex align-items-center">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" role="switch" id="obsidian-switch">
-                        <label class="form-check-label text-nowrap" for="obsidian-switch">Save to Obsidian</label>
-                    </div>
-                    <div class="ms-3 flex-fill fade">
-                        <input type="text" class="form-control form-control-sm required store" id="obsidian-vault" placeholder="Vault name">
-                    </div>
-                </div>
             </div>
 
             <div class="log mb-4">
@@ -79,7 +69,16 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4455388/
 
                 <div class="mb-3 d-flex">
                     <button class="btn btn-primary w-100 me-2" id="view-log-btn" type="button" tabindex="-1">view log</button>
-                    <button class="btn btn-primary w-100" id="download-log-btn" type="button" tabindex="-1">download log</button>
+                    <button class="btn btn-primary w-100" id="download-log-btn" type="button" tabindex="-1">export log</button>
+                </div>
+                <div class="obsidian d-flex align-items-center">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="obsidian-switch">
+                        <label class="form-check-label text-nowrap" for="obsidian-switch">Export to Obsidian</label>
+                    </div>
+                    <div class="ms-3 flex-fill fade">
+                        <input type="text" class="form-control form-control-sm required store" id="obsidian-vault" placeholder="Vault name">
+                    </div>
                 </div>
             </div>
 

@@ -175,32 +175,8 @@ function logDose() {
 
     clearFields();
     displayStacking();
-
-    if (document.getElementById('obsidian-switch').checked) saveToObsidian(entry);
 }
 document.getElementById('log-btn').addEventListener('click', logDose);
-
-function saveToObsidian(entry) {
-    var datetime = new Date(entry.datetime),
-        vault = encodeURI(document.getElementById('obsidian-vault').value),
-        file = datetime.getFullYear() + '-' + (datetime.getMonth() + 1) + '-' + datetime.getDate();
-
-    entry['datetime'] = datetime.getHours() + ':' + datetime.getMinutes();
-
-    var content = encodeURI('\n' + Object.values(entry).join(' | '));
-    uri = `obsidian://new?vault=${vault}&file=bolus%20log/${file}&content=${content}&append`;
-    window.location.href = uri;
-}
-
-function switchObsidian() {
-    var checked = document.getElementById('obsidian-switch').checked
-        vault = document.getElementById('obsidian-vault');
-    localStorage.setItem("obsidian", checked);
-
-    if (checked) vault.parentNode.classList.remove('fade');
-    else vault.parentNode.classList.add('fade');
-}
-document.getElementById('obsidian-switch').addEventListener('click', switchObsidian);
 
 function loadLog() {
     var o = JSON.parse(localStorage.getItem('log')),
@@ -323,14 +299,47 @@ function deleteLogItem(i) {
 }
 
 function downloadLog() {
-    const log = localStorage.getItem("log"),
-          uri = "data:text/json;charset=utf-8," + encodeURIComponent(log),
-          anchor = document.getElementById('download');
-    anchor.setAttribute("href", uri);
-    anchor.setAttribute("download", "data.json");
-    anchor.click();
+    if (document.getElementById('obsidian-switch').checked)
+        saveToObsidian();
+    else {
+        const log = localStorage.getItem("log"),
+              uri = "data:text/json;charset=utf-8," + encodeURIComponent(log),
+              anchor = document.getElementById('download');
+        anchor.setAttribute("href", uri);
+        anchor.setAttribute("download", "data.json");
+        anchor.click();
+    }
 }
 document.getElementById('download-log-btn').addEventListener('click', downloadLog);
+
+function saveToObsidian(entry) {
+    var log = JSON.parse(localStorage.getItem("log")),
+        vault = encodeURI(document.getElementById('obsidian-vault').value),
+        firstEntryDate = new Date(log[0].datetime),
+        lastEntryDate = new Date(log[Object.keys(log).length-1].datetime),
+        file = addZero(firstEntryDate.getFullYear()) + '-' + addZero(firstEntryDate.getMonth() + 1) + '-' + addZero(firstEntryDate.getDate()) +
+               ' - ' +
+               addZero(lastEntryDate.getFullYear()) + '-' + addZero(lastEntryDate.getMonth() + 1) + '-' + addZero(lastEntryDate.getDate()),
+        content = 'Date|Units|Carbs|BGL|ICR|ISF|Target\n--|--|--|--|--|--|--';
+
+    for (l in log) {
+        log[l].datetime = formatDate(log[l].datetime);
+        content += '\n' + Object.values(log[l]).join(' | ');
+    }
+
+    uri = `obsidian://new?vault=${vault}&file=bolus%20log/${file}&content=${encodeURI(content)}&overwrite`;
+    window.location.href = uri;
+}
+
+function switchObsidian() {
+    var checked = document.getElementById('obsidian-switch').checked
+        vault = document.getElementById('obsidian-vault');
+    localStorage.setItem("obsidian", checked);
+
+    if (checked) vault.parentNode.classList.remove('fade');
+    else vault.parentNode.classList.add('fade');
+}
+document.getElementById('obsidian-switch').addEventListener('click', switchObsidian);
 
 function checkStacking() {
     if (JSON.parse(localStorage.getItem("log")).length < 1) return false;
