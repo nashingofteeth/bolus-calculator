@@ -183,6 +183,9 @@ function loadLog() {
     if (log.innerHTML) log.innerHTML = "";
     log.classList.remove('d-none');
     
+    document.getElementById('view-log-btn').classList.add('d-none');
+    document.getElementById('delete-all-btn').classList.remove('d-none');
+    
     if (o.length < 1) {
         log.innerHTML = '<span class="invalid-feedback d-block">No log items...</span>'
         return;
@@ -243,10 +246,7 @@ function loadLog() {
 
     log.appendChild(tbody);
 }
-document.getElementById('view-log-btn').addEventListener('click', function(e) {
-    loadLog();
-    this.parentNode.removeChild(this);
-});
+document.getElementById('view-log-btn').addEventListener('click', loadLog);
 
 function formatDate(timestamp) {
     var date = new Date(timestamp),
@@ -296,6 +296,20 @@ function deleteLogItem(i) {
         localStorage.setItem("log", JSON.stringify(logItems));
     }
 }
+
+function deleteAllLogItems() {
+    var log = document.getElementById('log'),
+        view = document.getElementById('view-log-btn'),
+        delete_all = document.getElementById('delete-all-btn');
+
+    log.innerHTML = '';
+    localStorage.setItem('log', '[]');
+
+    log.classList.add('d-none');
+    view.classList.remove('d-none');
+    delete_all.classList.add('d-none');
+}
+document.getElementById('delete-all-btn').addEventListener('click', deleteAllLogItems);
 
 function downloadLog() {
     if (document.getElementById('obsidian-switch').checked)
