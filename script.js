@@ -377,16 +377,12 @@ function checkStacking() {
 
 function displayStacking() {
     if (checkStacking()) {
-        document.getElementById('log-btn').innerHTML = '<i class="bi bi-database-add me-2"></i>log dose<small class="badge fw-normal position-static">(last dose ' + checkStacking() + ' ago)</small>';
-        document.getElementById('log-btn').classList.remove("btn-primary");
-        document.getElementById('log-btn').classList.add("btn-danger");
+        document.getElementById('last-dose').innerHTML = 'last dose ' + checkStacking() + ' ago';
         document.getElementById('units').classList.remove("text-primary");
         document.getElementById('units').classList.add("text-danger");
     }
     else {
-        document.getElementById('log-btn').innerHTML = '<i class="bi bi-database-add me-2"></i>log dose';
-        document.getElementById('log-btn').classList.remove("btn-danger");
-        document.getElementById('log-btn').classList.add("btn-primary");
+        document.getElementById('last-dose').innerHTML = '';
         document.getElementById('units').classList.remove("text-danger");
         document.getElementById('units').classList.add("text-primary");
     }
