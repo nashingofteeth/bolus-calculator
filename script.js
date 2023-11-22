@@ -377,7 +377,7 @@ function checkStacking() {
 
 function displayStacking() {
     if (checkStacking()) {
-        document.getElementById('last-dose').innerHTML = 'last dose ' + checkStacking() + ' ago';
+        document.getElementById('last-dose').innerHTML = 'dose ' + checkStacking() + ' ago';
         document.getElementById('units').classList.remove("text-primary");
         document.getElementById('units').classList.add("text-danger");
     }
