@@ -340,7 +340,7 @@ function saveToObsidian(entry) {
         content += '\n' + Object.values(log[l]).join(' | ');
     }
 
-    uri = `obsidian://new?vault=${vault}&file=bolus%20log/${file}&content=${encodeURI(content)}&overwrite`;
+    uri = `obsidian://new?vault=${vault}&file=%F0%9F%A9%B8%20bolus%20log/${file}&content=${encodeURI(content)}&overwrite`;
     window.location.href = uri;
 }
 
