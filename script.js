@@ -326,21 +326,23 @@ function downloadLog() {
 document.getElementById('download-log-btn').addEventListener('click', downloadLog);
 
 function saveToObsidian(entry) {
+    const formatFileDate = (date) => {
+        return String(date.getFullYear()).slice(2) + addZero(date.getMonth() + 1) + addZero(date.getDate())
+    }
+
     var log = JSON.parse(localStorage.getItem("log")),
         vault = encodeURI(document.getElementById('obsidian-vault').value),
         firstEntryDate = new Date(log[0].datetime),
         lastEntryDate = new Date(log[Object.keys(log).length-1].datetime),
-        file = addZero(firstEntryDate.getFullYear()) + '-' + addZero(firstEntryDate.getMonth() + 1) + '-' + addZero(firstEntryDate.getDate()) +
-               ' - ' +
-               addZero(lastEntryDate.getFullYear()) + '-' + addZero(lastEntryDate.getMonth() + 1) + '-' + addZero(lastEntryDate.getDate()),
-        content = 'Date|Units|Carbs|BGL|ICR|ISF|Target\n--|--|--|--|--|--|--';
+        file = 'bolus ' + formatFileDate(firstEntryDate) + '-' + formatFileDate(lastEntryDate),
+        content = '---\ntags:\n  - health/diabetes/bolus\n---\n\nDate|Units|Carbs|BGL|ICR|ISF|Target\n--|--|--|--|--|--|--';
 
     for (l in log) {
         log[l].datetime = formatDate(log[l].datetime);
         content += '\n' + Object.values(log[l]).join(' | ');
     }
 
-    uri = `obsidian://new?vault=${vault}&file=%F0%9F%A9%B8%20bolus%20log/${file}&content=${encodeURI(content)}&overwrite`;
+    uri = `obsidian://new?vault=${vault}&file=${file}&content=${encodeURI(content)}&overwrite`;
     window.location.href = uri;
 }
 
