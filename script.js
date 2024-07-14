@@ -68,7 +68,7 @@ document.addEventListener("keydown", (event) => {
 function clearFields() {
   const carbs = [...document.querySelectorAll(".carb")];
   for (i in carbs) {
-    if (i === 0) carbs[i].value = "";
+    if (i === "0") carbs[i].value = "";
     else carbs[i].parentNode.removeChild(carbs[i]);
   }
   document.getElementById("bg").value = "";
