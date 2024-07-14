@@ -213,7 +213,16 @@ function loadLog() {
   tr.setAttribute("id", "logHeader");
   thead.appendChild(tr);
 
-  const headCols = ["Date", "Units", "Carbs", "BGL", "ICR", "ISF", "Target", ""];
+  const headCols = [
+    "Date",
+    "Units",
+    "Carbs",
+    "BGL",
+    "ICR",
+    "ISF",
+    "Target",
+    "",
+  ];
 
   for (c in headCols) {
     const th = document.createElement("TH");
@@ -353,10 +362,9 @@ function saveToObsidian(entry) {
   const vault = encodeURI(document.getElementById("obsidian-vault").value);
   const firstEntryDate = new Date(log[0].datetime);
   const lastEntryDate = new Date(log[Object.keys(log).length - 1].datetime);
-  const file =
-      `archive/bolus ${formatFileDate(firstEntryDate)}-${formatFileDate(lastEntryDate)}`;
+  const file = `archive/bolus ${formatFileDate(firstEntryDate)}-${formatFileDate(lastEntryDate)}`;
   let content =
-      "---\ntags:\n  - records/health/bolus\n---\n\nDate|Units|Carbs|BGL|ICR|ISF|Target\n--|--|--|--|--|--|--";
+    "---\ntags:\n  - records/health/bolus\n---\n\nDate|Units|Carbs|BGL|ICR|ISF|Target\n--|--|--|--|--|--|--";
 
   for (l in log) {
     log[l].datetime = formatDate(log[l].datetime);
