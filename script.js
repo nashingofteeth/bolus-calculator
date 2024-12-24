@@ -146,17 +146,8 @@ function calcUnits() {
 }
 
 function addCarbs() {
-  let totalCarbs = 0;
-  const carbs = [...document.querySelectorAll(".carb")];
-  let carb = 0;
-  for (c in carbs) {
-    if (carbs[c].value) carb = carbs[c].value;
-    totalCarbs += Number.parseInt(carb);
-  }
-
-  totalCarbs = totalCarbs === 0 ? "" : totalCarbs;
-
-  return totalCarbs;
+  return [...document.querySelectorAll(".carb")].reduce((total, carb) =>
+    total + Number.parseInt(carb.value || 0), 0);
 }
 
 function logDose() {
