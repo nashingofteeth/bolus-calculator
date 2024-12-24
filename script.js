@@ -307,16 +307,21 @@ function deleteLogItem(itemId) {
 }
 
 function deleteAllLogItems() {
-  const log = document.getElementById("log");
-  const view = document.getElementById("view-log-btn");
-  const delete_all = document.getElementById("delete-all-btn");
+  const sure = confirm(
+    "You about to delete all log items.\nAre you sure?",
+  );
+  if (sure) {
+    const log = document.getElementById("log");
+    const view = document.getElementById("view-log-btn");
+    const deleteAllButton = document.getElementById("delete-all-btn");
 
-  log.innerHTML = "";
-  localStorage.setItem("log", "[]");
+    log.innerHTML = "";
+    localStorage.setItem("log", "[]");
 
-  log.classList.add("d-none");
-  view.classList.remove("d-none");
-  delete_all.classList.add("d-none");
+    log.classList.add("d-none");
+    view.classList.remove("d-none");
+    deleteAllButton.classList.add("d-none");
+  }
 }
 document
   .getElementById("delete-all-btn")
