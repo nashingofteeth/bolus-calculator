@@ -46,7 +46,7 @@ document.addEventListener("keydown", (event) => {
   const field = document.activeElement;
 
   //backspace - delete carb
-  if (event.keyCode === 8 || event.keyCode === 46) {
+  if (event.key === 'Backspace' || event.key === 'Delete') {
     if (field.value === "" && /carb/.test(field.id) && field.id !== "carb") {
       event.preventDefault();
       field.previousElementSibling.focus();
@@ -54,7 +54,7 @@ document.addEventListener("keydown", (event) => {
     }
   }
   //enter - create carb
-  if (event.keyCode === 13) {
+  if (event.key === 'Enter') {
     if (/carb/.test(field.id)) {
       event.preventDefault();
       addField();
