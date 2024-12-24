@@ -32,33 +32,30 @@
 
 //add carb fields
 function addField() {
-  const fieldNumber = [...document.querySelectorAll(".carb")].length + 1;
-  document
-    .getElementById("carbs")
-    .parentNode.insertAdjacentHTML(
-      "beforeend",
-      `<input type="number" class="carb form-control form-control-lg mb-2" pattern="[0-9]*" placeholder="carbs" class="carb" id="carbs${fieldNumber}">`,
-    );
-  document.getElementById(`carbs${fieldNumber}`).focus();
+  const firstCarb = document.getElementById("carb");
+  const newCarb = firstCarb.cloneNode();
+  newCarb.classList.remove("term", "store");
+  newCarb.value = "";
+  newCarb.id = `carb${[...document.querySelectorAll(".carbs")].length + 1}`;
+  firstCarb.parentNode.appendChild(newCarb);
+  newCarb.focus();
 }
 document.getElementById("add-btn").addEventListener("click", addField);
 
 document.addEventListener("keydown", (event) => {
+  const field = document.activeElement;
+
   //backspace - delete carb
   if (event.keyCode === 8 || event.keyCode === 46) {
-    const fieldId = document.activeElement.id;
-    const field = document.getElementById(fieldId);
-
-    if (field.value === "" && /carb/.test(fieldId) && fieldId !== "carbs") {
+    if (field.value === "" && /carb/.test(field.id) && field.id !== "carb") {
       event.preventDefault();
       field.previousElementSibling.focus();
-      field.parentNode.removeChild(field);
+      field.remove();
     }
   }
   //enter - create carb
   if (event.keyCode === 13) {
-    const fieldId = document.activeElement.id;
-    if (/carb/.test(fieldId)) {
+    if (/carb/.test(field.id)) {
       event.preventDefault();
       addField();
     }
@@ -66,7 +63,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 function clearFields() {
-  const carbs = [...document.querySelectorAll(".carb")];
+  const carbs = [...document.querySelectorAll(".carbs")];
   for (i in carbs) {
     if (i === "0") carbs[i].value = "";
     else carbs[i].parentNode.removeChild(carbs[i]);
@@ -79,41 +76,40 @@ document.getElementById("clear-btn").addEventListener("click", clearFields);
 
 function updateFields() {
   storeValues();
-
-  if (checkRequired()) calcUnits();
+  if (validFields()) calcUnits();
 }
 document.addEventListener("keyup", updateFields);
 
 function storeValues() {
-  const storedValues = [...document.querySelectorAll(".store")];
-  for (s in storedValues) {
-    let value = storedValues[s].value;
-    if (storedValues[s].id === "carbs") value = addCarbs();
-    localStorage.setItem(storedValues[s].id, value);
+  for (const input of [...document.querySelectorAll(".store")]) {
+    localStorage.setItem(
+      input.id,
+      input.id === "carb" ? addCarbs() : input.value
+    );
   }
 }
 
-function checkRequired() {
-  const required = [...document.querySelectorAll(".required")];
+function validFields() {
+  const requiredFields = [...document.querySelectorAll(".required")];
   let hasTerms = true;
-  for (r in required) {
+  for (const required of requiredFields) {
     if (
-      !required[r].value ||
-      Number.parseInt(required[r].value) < Number.parseInt(required[r].min)
+      !required.value ||
+      Number.parseInt(required.value) < Number.parseInt(required.min)
     ) {
-      required[r].classList.add("is-invalid");
-      if (required[r].classList.contains("term")) hasTerms = false;
-    } else required[r].classList.remove("is-invalid");
+      required.classList.add("is-invalid");
+      if (required.classList.contains("term")) hasTerms = false;
+    } else required.classList.remove("is-invalid");
   }
 
   const elems = [
     ...document.querySelectorAll(".dose .form-control, .dose .btn"),
   ];
   if (hasTerms) {
-    for (e in elems) elems[e].removeAttribute("disabled");
+    for (const elem of elems) elem.removeAttribute("disabled");
     return true;
   }
-  for (e in elems) elems[e].setAttribute("disabled", "");
+  for (const elem of elems) elem.setAttribute("disabled", "");
   document.getElementById("units").value = "";
   document.getElementById("bg").placeholder = "";
   return false;
@@ -146,8 +142,8 @@ function calcUnits() {
 }
 
 function addCarbs() {
-  return [...document.querySelectorAll(".carb")].reduce((total, carb) =>
-    total + Number.parseInt(carb.value || 0), 0);
+  return [...document.querySelectorAll(".carbs")].reduce((total, carb) =>
+    total + Number.parseInt(carb.value || 0), 0) || "";
 }
 
 function logDose() {
