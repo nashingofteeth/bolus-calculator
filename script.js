@@ -95,7 +95,7 @@ function validFields() {
   for (const required of requiredFields) {
     if (
       !required.value ||
-      Number.parseInt(required.value) < Number.parseInt(required.min)
+      Number(required.value) < Number(required.min)
     ) {
       required.classList.add("is-invalid");
       if (required.classList.contains("term")) hasTerms = false;
@@ -226,6 +226,14 @@ function loadLog() {
   o.reverse();
   const tbody = document.createElement("TBODY");
 
+  // create log item delete button
+  const delButton = document.createElement('button');
+  delButton.className = 'del-button btn btn-sm p-1 btn-danger bg-danger';
+  delButton.type = 'button';
+  const icon = document.createElement('i');
+  icon.className = 'bi bi-x-lg';
+  delButton.appendChild(icon);
+
   for (i in o) {
     const tr = document.createElement("TR");
     tr.setAttribute("class", "logItem");
@@ -239,21 +247,16 @@ function loadLog() {
       o[i].icr,
       o[i].isf,
       o[i].target,
-      '<button class="delete-btn btn btn-sm p-1 btn-danger bg-danger" type="button"><i class="bi bi-x-lg"></i></button>',
+      delButton.outerHTML
     ];
 
-    for (c in bodyCols) {
+    for (const col of bodyCols) {
       const td = document.createElement("TD");
-      td.innerHTML = bodyCols[c];
+      td.innerHTML = col;
       tr.appendChild(td);
     }
 
-    tr.lastElementChild.firstElementChild.addEventListener(
-      "click",
-      function (e) {
-        deleteLogItem(this.parentNode.parentNode.id);
-      },
-    );
+    tr.querySelector(".del-button").addEventListener("click", () => deleteLogItem(Number(tr.id)));
 
     tbody.appendChild(tr);
   }
@@ -286,21 +289,19 @@ function addZero(i) {
   return i;
 }
 
-function deleteLogItem(i) {
+function deleteLogItem(itemId) {
   const sure = confirm(
-    `You about to delete a log item created at ${formatDate(Number.parseInt(i))}.\nAre you sure?`,
+    `You about to delete a log item created at ${formatDate(itemId)}.\nAre you sure?`,
   );
 
   if (sure) {
     // remove from tableItems
-    const elem = document.getElementById(i);
+    const elem = document.getElementById(itemId);
     elem.parentNode.removeChild(elem);
 
     // remove from local storage
     const logItems = JSON.parse(localStorage.getItem("log"));
-    for (n in logItems) {
-      if (logItems[n].datetime === i) logItems.splice(n, 1);
-    }
+    logItems.splice(logItems.findIndex(item => item.datetime === itemId), 1);
     localStorage.setItem("log", JSON.stringify(logItems));
   }
 }
