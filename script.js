@@ -5,7 +5,7 @@
     input.value = localStorage.getItem(input.id);
   }
 
-  // restore Obsidian save switch state
+  // restore Obsidian save toggle state
   if (localStorage.getItem("obsidian") === "true") {
     document.getElementById("obsidian-toggle").checked = true;
     document
