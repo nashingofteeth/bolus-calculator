@@ -1,12 +1,13 @@
 (() => {
   // load local storage
-  const storedValues = [...document.querySelectorAll(".store")];
-  for (s in storedValues)
-    storedValues[s].value = localStorage.getItem(storedValues[s].id);
+  const storedInputs = [...document.querySelectorAll(".store")];
+  for (const input of storedInputs) {
+    input.value = localStorage.getItem(input.id);
+  }
 
   // restore Obsidian save switch state
   if (localStorage.getItem("obsidian") === "true") {
-    document.getElementById("obsidian-switch").checked = true;
+    document.getElementById("obsidian-toggle").checked = true;
     document
       .getElementById("obsidian-vault")
       .parentNode.classList.remove("fade");
@@ -16,7 +17,7 @@
   if (!localStorage.getItem("log")) localStorage.setItem("log", "[]");
 
   updateFields();
-  displayStacking();
+  toggleActiveDoseBadge();
 
   // set focus on relevant field
   const icr = document.getElementById("icr").value;
@@ -84,7 +85,7 @@ function storeValues() {
   for (const input of [...document.querySelectorAll(".store")]) {
     localStorage.setItem(
       input.id,
-      input.id === "carb" ? addCarbs() : input.value
+      input.id === "carb" ? totalCarbs() : input.value
     );
   }
 }
@@ -116,7 +117,7 @@ function validFields() {
 }
 
 function calcUnits() {
-  const carbs = addCarbs();
+  const carbs = totalCarbs();
   const bg = Number.parseInt(document.getElementById("bg").value);
   const icr = Number.parseFloat(document.getElementById("icr").value);
   const isf = Number.parseInt(document.getElementById("isf").value);
@@ -141,7 +142,7 @@ function calcUnits() {
   document.getElementById("units").value = Math.round(units * 10) / 10;
 }
 
-function addCarbs() {
+function totalCarbs() {
   return [...document.querySelectorAll(".carbs")].reduce((total, carb) =>
     total + Number.parseInt(carb.value || 0), 0) || "";
 }
@@ -150,7 +151,7 @@ function logDose() {
   const icr = document.getElementById("icr").value;
   const isf = document.getElementById("isf").value;
   const target = document.getElementById("target").value;
-  const carbs = addCarbs() || 0;
+  const carbs = totalCarbs() || 0;
   const bg = document.getElementById("bg").value || target;
   const units = Math.round(document.getElementById("units").value);
   const datetime = new Date().getTime();
@@ -168,30 +169,29 @@ function logDose() {
 
   const log = JSON.parse(localStorage.getItem("log"));
 
-  // add log item
+  // add log entry
   log.push(entry);
   localStorage.setItem("log", JSON.stringify(log));
-  if (document.getElementById("log").innerHTML) loadLog(log);
+  if (document.getElementById("log").innerHTML) showLog(log);
 
   clearFields();
-  displayStacking();
+  toggleActiveDoseBadge();
 }
 document.getElementById("log-btn").addEventListener("click", logDose);
 
-function loadLog() {
-  const o = JSON.parse(localStorage.getItem("log"));
-  const log = document.getElementById("log");
-  if (log.innerHTML) log.innerHTML = "";
-  log.classList.remove("d-none");
+function showLog() {
+  const log = JSON.parse(localStorage.getItem("log"));
+  if (!log.length) {
+    alert("No log data found");
+    return;
+  }
+
+  const logEl = document.getElementById("log");
+  if (logEl.innerHTML) logEl.innerHTML = "";
+  logEl.classList.remove("d-none");
 
   document.getElementById("view-log-btn").classList.add("d-none");
   document.getElementById("delete-all-btn").classList.remove("d-none");
-
-  if (o.length < 1) {
-    log.innerHTML =
-      '<span class="invalid-feedback d-block">No log items...</span>';
-    return;
-  }
 
   // create log headers
   const thead = document.createElement("THEAD");
@@ -211,43 +211,42 @@ function loadLog() {
     "",
   ];
 
-  for (c in headCols) {
+  for (const col of headCols) {
     const th = document.createElement("TH");
-    const h = document.createTextNode(headCols[c]);
+    const h = document.createTextNode(col);
 
     th.setAttribute("scope", "col");
     th.appendChild(h);
     tr.appendChild(th);
   }
 
-  log.appendChild(thead);
+  logEl.appendChild(thead);
 
   // populate log
-  o.reverse();
+  log.reverse();
   const tbody = document.createElement("TBODY");
 
-  // create log item delete button
-  const delButton = document.createElement('button');
-  delButton.className = 'del-button btn btn-sm p-1 btn-danger bg-danger';
-  delButton.type = 'button';
+  // create log entry delete button
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'delete-btn btn btn-sm p-1 btn-danger bg-danger';
+  deleteBtn.type = 'button';
   const icon = document.createElement('i');
   icon.className = 'bi bi-x-lg';
-  delButton.appendChild(icon);
+  deleteBtn.appendChild(icon);
 
-  for (i in o) {
+  for (const entry of log) {
     const tr = document.createElement("TR");
-    tr.setAttribute("class", "logItem");
-    tr.setAttribute("id", o[i].datetime);
+    tr.setAttribute("id", entry.datetime);
 
     const bodyCols = [
-      formatDate(o[i].datetime),
-      o[i].units,
-      o[i].carbs,
-      o[i].bg,
-      o[i].icr,
-      o[i].isf,
-      o[i].target,
-      delButton.outerHTML
+      formatDate(entry.datetime),
+      entry.units,
+      entry.carbs,
+      entry.bg,
+      entry.icr,
+      entry.isf,
+      entry.target,
+      deleteBtn.outerHTML
     ];
 
     for (const col of bodyCols) {
@@ -256,59 +255,46 @@ function loadLog() {
       tr.appendChild(td);
     }
 
-    tr.querySelector(".del-button").addEventListener("click", () => deleteLogItem(Number(tr.id)));
+    tr.querySelector(".delete-btn").addEventListener("click", () => deleteLogEntry(Number(tr.id)));
 
     tbody.appendChild(tr);
   }
 
-  log.appendChild(tbody);
+  logEl.appendChild(tbody);
 }
-document.getElementById("view-log-btn").addEventListener("click", loadLog);
+document.getElementById("view-log-btn").addEventListener("click", showLog);
 
 function formatDate(timestamp) {
-  const date = new Date(timestamp);
-  const years = String(date.getFullYear()).slice(2, 4);
-  const months = date.getMonth() + 1;
-  const days = date.getDate();
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? "pm" : "am";
-
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-
-  return `${years}/${addZero(months)}/${addZero(days)} ${hours}:${addZero(
-    minutes,
-  )} ${ampm}`;
+  return new Date(timestamp).toLocaleString('en-US', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
 }
 
-function addZero(i) {
-  if (i < 10) {
-    return `0${i}`;
-  }
-  return i;
-}
-
-function deleteLogItem(itemId) {
+function deleteLogEntry(entryId) {
   const sure = confirm(
-    `You about to delete a log item created at ${formatDate(itemId)}.\nAre you sure?`,
+    `You about to delete the log entry created at ${formatDate(entryId)}.\nAre you sure?`,
   );
 
   if (sure) {
-    // remove from tableItems
-    const elem = document.getElementById(itemId);
+    // remove from table
+    const elem = document.getElementById(entryId);
     elem.parentNode.removeChild(elem);
 
     // remove from local storage
-    const logItems = JSON.parse(localStorage.getItem("log"));
-    logItems.splice(logItems.findIndex(item => item.datetime === itemId), 1);
-    localStorage.setItem("log", JSON.stringify(logItems));
+    const logEntries = JSON.parse(localStorage.getItem("log"));
+    logEntries.splice(logEntries.findIndex(entry => entry.datetime === entryId), 1);
+    localStorage.setItem("log", JSON.stringify(logEntries));
   }
 }
 
-function deleteAllLogItems() {
+function deleteAllLogEntries() {
   const sure = confirm(
-    "You about to delete all log items.\nAre you sure?",
+    "You about to delete all log entries.\nAre you sure?",
   );
   if (sure) {
     const log = document.getElementById("log");
@@ -325,92 +311,104 @@ function deleteAllLogItems() {
 }
 document
   .getElementById("delete-all-btn")
-  .addEventListener("click", deleteAllLogItems);
+  .addEventListener("click", deleteAllLogEntries);
 
 function downloadLog() {
-  if (document.getElementById("obsidian-switch").checked) saveToObsidian();
+  if (document.getElementById("obsidian-toggle").checked) saveToObsidian();
   else {
-    const log = localStorage.getItem("log");
-    const uri = `data:text/json;charset=utf-8,${encodeURIComponent(log)}`;
-    const anchor = document.getElementById("download");
-    anchor.setAttribute("href", uri);
-    anchor.setAttribute("download", "data.json");
-    anchor.click();
+    try {
+      const log = localStorage.getItem("log");
+      if (!log || log === "[]") {
+        alert("No log data found");
+        return;
+      }
+
+      const blob = new Blob([log], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = "data.json";
+      anchor.click();
+
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download log:', error);
+    }
   }
 }
 document
   .getElementById("download-log-btn")
   .addEventListener("click", downloadLog);
 
-function saveToObsidian(entry) {
-  const formatFileDate = (date) => {
-    return (
-      String(date.getFullYear()).slice(2) +
-      addZero(date.getMonth() + 1) +
-      addZero(date.getDate())
-    );
+function saveToObsidian() {
+  const formatFileDate = timestamp => {
+    const parts = new Date(timestamp).toLocaleDateString('en-US', {
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit'
+    }).split('/');
+    return `${parts[2]}${parts[0]}${parts[1]}`;
   };
 
   const log = JSON.parse(localStorage.getItem("log"));
   const vault = encodeURI(document.getElementById("obsidian-vault").value);
-  const firstEntryDate = new Date(log[0].datetime);
-  const lastEntryDate = new Date(log[Object.keys(log).length - 1].datetime);
-  const file = `archive/bolus ${formatFileDate(firstEntryDate)}-${formatFileDate(lastEntryDate)}`;
+  const file = `archive/bolus ${formatFileDate(log[0].datetime)}-${formatFileDate(log.at(-1).datetime)}`;
   let content =
     "---\ntags:\n  - records/health/bolus\n---\n\nDate|Units|Carbs|BGL|ICR|ISF|Target\n--|--|--|--|--|--|--";
 
-  for (l in log) {
-    log[l].datetime = formatDate(log[l].datetime);
-    content += `\n${Object.values(log[l]).join(" | ")}`;
+  for (const entry of log) {
+    entry.datetime = formatDate(entry.datetime);
+    content += `\n${Object.values(entry).join(" | ")}`;
   }
 
   uri = `obsidian://new?vault=${vault}&file=${file}&content=${encodeURI(content)}&overwrite`;
   window.location.href = uri;
 }
 
-function switchObsidian() {
-  const checked = document.getElementById("obsidian-switch").checked;
+function toggleObsidian() {
+  const checked = document.getElementById("obsidian-toggle").checked;
   vault = document.getElementById("obsidian-vault");
   localStorage.setItem("obsidian", checked);
 
-  if (checked) vault.parentNode.classList.remove("fade");
-  else vault.parentNode.classList.add("fade");
+  if (checked) vault.parentElement.classList.remove("fade");
+  else vault.parentElement.classList.add("fade");
 }
 document
-  .getElementById("obsidian-switch")
-  .addEventListener("click", switchObsidian);
+  .getElementById("obsidian-toggle")
+  .addEventListener("click", toggleObsidian);
 
-function checkStacking() {
+function activeDose() {
   if (JSON.parse(localStorage.getItem("log")).length < 1) return false;
 
   const now = new Date().getTime();
-  const logArray = JSON.parse(localStorage.getItem("log"));
-  const last = Number(logArray[logArray.length - 1].datetime);
-  const activityLength = 5 * 60 * 60 * 1000; // 5 hours
-  const since = now - last;
-  const seconds = new Date(since).getUTCSeconds();
-  const minutes = new Date(since).getUTCMinutes();
-  const hours = new Date(since).getUTCHours();
+  const log = JSON.parse(localStorage.getItem("log"));
+  const lastEntry = Number(log.at(-1).datetime);
+  const timeout = 5 * 60 * 60 * 1000; // 5 hours
+  const sinceLast = now - lastEntry;
+  const secondsSince = new Date(sinceLast).getUTCSeconds();
+  const minutesSince = new Date(sinceLast).getUTCMinutes();
+  const hoursSince = new Date(sinceLast).getUTCHours();
 
   let count = "";
-  if (hours) count = `${hours + Number.parseFloat((minutes / 60).toFixed(1))}h`;
-  else if (minutes) count = `${minutes}m`;
-  else count = `${seconds}s`;
+  if (hoursSince) count = `${hoursSince + Number.parseFloat((minutesSince / 60).toFixed(1))}h`;
+  else if (minutesSince) count = `${minutesSince}m`;
+  else count = `${secondsSince}s`;
 
-  if (since < activityLength) return count;
+  if (sinceLast < timeout) return count;
   return false;
 }
 
-function displayStacking() {
-  if (checkStacking()) {
-    document.getElementById("last-dose").innerHTML =
-      `dose ${checkStacking()} ago`;
-    document.getElementById("units").classList.remove("text-primary");
-    document.getElementById("units").classList.add("text-danger");
-  } else {
-    document.getElementById("last-dose").innerHTML = "";
+function toggleActiveDoseBadge() {
+  if (!activeDose()) {
+    document.getElementById("active-dose").innerHTML = "";
     document.getElementById("units").classList.remove("text-danger");
     document.getElementById("units").classList.add("text-primary");
+  } else {
+    document.getElementById("active-dose").innerHTML =
+      `dose ${activeDose()} ago`;
+    document.getElementById("units").classList.remove("text-primary");
+    document.getElementById("units").classList.add("text-danger");
   }
 }
-setInterval(displayStacking, 1000);
+setInterval(toggleActiveDoseBadge, 1000);
