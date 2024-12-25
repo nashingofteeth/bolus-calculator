@@ -1,2 +1,2 @@
 # bolus-calculator
-javascript app for managing insulin therapy
+Progressive Web App for managing insulin therapy
