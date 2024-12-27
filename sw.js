@@ -1,4 +1,5 @@
-const CACHE_NAME = 'bolus-calculator-v4.6.0';
+importScripts('./version.js');
+const CACHE_NAME = `bolus-calculator-${APP_VERSION}`;
 const ASSETS = [
   './',
   './index.html',
