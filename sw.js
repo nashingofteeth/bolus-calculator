@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bolus-calculator-v4.5.1';
+const CACHE_NAME = 'bolus-calculator-v4.6.0';
 const ASSETS = [
   './',
   './index.html',

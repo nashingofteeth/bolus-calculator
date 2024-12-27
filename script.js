@@ -147,7 +147,7 @@ function totalCarbs() {
     total + Number.parseInt(carb.value || 0), 0) || "";
 }
 
-function logDose() {
+const logDose = () => {
   const icr = document.getElementById("icr").value;
   const isf = document.getElementById("isf").value;
   const target = document.getElementById("target").value;
@@ -179,6 +179,72 @@ function logDose() {
 }
 document.getElementById("log-btn").addEventListener("click", logDose);
 
+const deleteLogEntry = (entryId) => {
+  const sure = confirm(
+    `You about to delete the log entry created at ${formatDate(entryId)}.\nAre you sure?`,
+  );
+
+  if (sure) {
+    // remove from table
+    const elem = document.getElementById(entryId);
+    elem.parentNode.removeChild(elem);
+
+    // remove from local storage
+    const logEntries = JSON.parse(localStorage.getItem("log"));
+    logEntries.splice(logEntries.findIndex(entry => entry.datetime === entryId), 1);
+    localStorage.setItem("log", JSON.stringify(logEntries));
+  }
+}
+
+const deleteAllLogEntries = () => {
+  const sure = confirm(
+    "You about to delete all log entries.\nAre you sure?",
+  );
+  if (sure) {
+    const log = document.getElementById("log");
+    const view = document.getElementById("view-log-btn");
+    const deleteAllButton = document.getElementById("delete-all-btn");
+
+    log.innerHTML = "";
+    localStorage.setItem("log", "[]");
+
+    log.classList.add("d-none");
+    view.classList.remove("d-none");
+    deleteAllButton.classList.add("d-none");
+  }
+}
+document
+  .getElementById("delete-all-btn")
+  .addEventListener("click", deleteAllLogEntries);
+
+const updateLogEntryDateTime = (row) => {
+  const input = row.querySelector('.edit-datetime');
+  const originalTimestamp = Number(row.id);
+  const newTimestamp = new Date(input.value).getTime();
+
+  const sure = confirm(
+    `Change entry time from ${formatDate(originalTimestamp)} to ${formatDate(newTimestamp)}?`
+  );
+
+  if (sure) {
+    const log = JSON.parse(localStorage.getItem("log"));
+
+    const entryIndex = log.findIndex(entry => entry.datetime === originalTimestamp);
+    log[entryIndex].datetime = newTimestamp;
+
+    // sort (ascending)
+    log.sort((a, b) => a.datetime - b.datetime);
+
+    localStorage.setItem("log", JSON.stringify(log));
+
+    // re-render log
+    showLog();
+  } else {
+    // Reset the input to original value if cancelled
+    input.value = formatDateForInput(originalTimestamp);
+  }
+}
+
 function showLog() {
   const log = JSON.parse(localStorage.getItem("log"));
   if (!log.length) {
@@ -197,7 +263,6 @@ function showLog() {
   const thead = document.createElement("THEAD");
   const tr = document.createElement("TR");
 
-  tr.setAttribute("id", "logHeader");
   thead.appendChild(tr);
 
   const headCols = [
@@ -227,26 +292,39 @@ function showLog() {
   const tbody = document.createElement("TBODY");
 
   // create log entry delete button
-  const deleteBtn = document.createElement('button');
-  deleteBtn.className = 'delete-btn btn btn-sm p-1 btn-danger bg-danger';
-  deleteBtn.type = 'button';
-  const icon = document.createElement('i');
-  icon.className = 'bi bi-x-lg';
-  deleteBtn.appendChild(icon);
+  const deleteBtn = () => {
+    const button = document.createElement('button');
+    button.className = 'delete-btn btn btn-sm p-1 btn-danger bg-danger';
+    button.type = 'button';
+    const icon = document.createElement('i');
+    icon.className = 'bi bi-x-lg';
+    button.appendChild(icon);
+    return button.outerHTML;
+  };
+
+  // create log entry datetime input
+  const datetimeInput = (timestamp) => {
+    const input = document.createElement('input');
+    input.type = 'datetime-local';
+    input.className = 'edit-datetime form-control form-control-sm';
+    input.step = '1';
+    input.setAttribute('value', formatDateForInput(timestamp));
+    return input.outerHTML;
+  };
 
   for (const entry of log) {
     const tr = document.createElement("TR");
     tr.setAttribute("id", entry.datetime);
 
     const bodyCols = [
-      formatDate(entry.datetime),
+      datetimeInput(entry.datetime),
       entry.units,
       entry.carbs,
       entry.bg,
       entry.icr,
       entry.isf,
       entry.target,
-      deleteBtn.outerHTML
+      deleteBtn(),
     ];
 
     for (const col of bodyCols) {
@@ -256,6 +334,7 @@ function showLog() {
     }
 
     tr.querySelector(".delete-btn").addEventListener("click", () => deleteLogEntry(Number(tr.id)));
+    tr.querySelector('.edit-datetime').addEventListener("change", () => updateLogEntryDateTime(tr));
 
     tbody.appendChild(tr);
   }
@@ -264,56 +343,7 @@ function showLog() {
 }
 document.getElementById("view-log-btn").addEventListener("click", showLog);
 
-function formatDate(timestamp) {
-  return new Date(timestamp).toLocaleString('en-US', {
-    year: '2-digit',
-    month: '2-digit',
-    day: '2-digit',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
-  });
-}
-
-function deleteLogEntry(entryId) {
-  const sure = confirm(
-    `You about to delete the log entry created at ${formatDate(entryId)}.\nAre you sure?`,
-  );
-
-  if (sure) {
-    // remove from table
-    const elem = document.getElementById(entryId);
-    elem.parentNode.removeChild(elem);
-
-    // remove from local storage
-    const logEntries = JSON.parse(localStorage.getItem("log"));
-    logEntries.splice(logEntries.findIndex(entry => entry.datetime === entryId), 1);
-    localStorage.setItem("log", JSON.stringify(logEntries));
-  }
-}
-
-function deleteAllLogEntries() {
-  const sure = confirm(
-    "You about to delete all log entries.\nAre you sure?",
-  );
-  if (sure) {
-    const log = document.getElementById("log");
-    const view = document.getElementById("view-log-btn");
-    const deleteAllButton = document.getElementById("delete-all-btn");
-
-    log.innerHTML = "";
-    localStorage.setItem("log", "[]");
-
-    log.classList.add("d-none");
-    view.classList.remove("d-none");
-    deleteAllButton.classList.add("d-none");
-  }
-}
-document
-  .getElementById("delete-all-btn")
-  .addEventListener("click", deleteAllLogEntries);
-
-function downloadLog() {
+const downloadLog = () => {
   if (document.getElementById("obsidian-toggle").checked) saveToObsidian();
   else {
     try {
@@ -366,7 +396,7 @@ function saveToObsidian() {
   window.location.href = uri;
 }
 
-function toggleObsidian() {
+const toggleObsidian = () => {
   const checked = document.getElementById("obsidian-toggle").checked;
   vault = document.getElementById("obsidian-vault");
   localStorage.setItem("obsidian", checked);
@@ -384,6 +414,7 @@ function activeDose() {
   const now = new Date().getTime();
   const log = JSON.parse(localStorage.getItem("log"));
   const lastEntry = Number(log.at(-1).datetime);
+  if (lastEntry > now) return false;
   const timeout = 5 * 60 * 60 * 1000; // 5 hours
   const sinceLast = now - lastEntry;
   const secondsSince = new Date(sinceLast).getUTCSeconds();
@@ -412,3 +443,28 @@ function toggleActiveDoseBadge() {
   }
 }
 setInterval(toggleActiveDoseBadge, 1000);
+
+// Helpers
+function formatDate(timestamp) {
+  return new Date(timestamp).toLocaleString('en-US', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+}
+
+function formatDateForInput(timestamp) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+
+  // Format as YYYY-MM-DDThh:mm:ss (ISO)
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+}
