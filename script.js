@@ -317,7 +317,7 @@ function showLog() {
   // create log entry datetime modal button
   const datetimeModalBtn = (timestamp) => {
     const button = document.createElement('button');
-    button.className = 'edit-datetime btn btn-link text-decoration-none';
+    button.className = 'edit-datetime btn btn-link btn-sm text-decoration-none p-0';
     button.textContent = formatDate(timestamp);
     return button.outerHTML;
   };
