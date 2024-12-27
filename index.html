@@ -225,12 +225,32 @@ https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4455388/
             <a id="download" class="d-none"></a>
         </div>
 
+        <div class="modal fade" id="datetimeModal" tabindex="-1" aria-labelledby="datetimeModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="datetimeModalLabel">Edit Date/Time</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <input type="datetime-local" class="form-control" id="modalDatetimeInput" step="1">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveDatetime">Save changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <script src="script.js" type="text/javascript"></script>
 
         <script src="version.js"></script>
         <script>
           document.getElementById('version').textContent = ` (${APP_VERSION})`;
         </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
         <script>
           if ('serviceWorker' in navigator) {

@@ -179,19 +179,21 @@ const logDose = () => {
 }
 document.getElementById("log-btn").addEventListener("click", logDose);
 
-const deleteLogEntry = (entryId) => {
+const deleteLogEntry = (row) => {
+  const timestamp = Number(row.id);
   const sure = confirm(
-    `You about to delete the log entry created at ${formatDate(entryId)}.\nAre you sure?`,
+    `You about to delete the log entry created at ${formatDate(timestamp)}.\nAre you sure?`,
   );
 
   if (sure) {
     // remove from table
-    const elem = document.getElementById(entryId);
-    elem.parentNode.removeChild(elem);
+    row.remove();
 
     // remove from local storage
     const logEntries = JSON.parse(localStorage.getItem("log"));
-    logEntries.splice(logEntries.findIndex(entry => entry.datetime === entryId), 1);
+    const entryIndex = logEntries.findIndex(entry => entry.datetime === timestamp);
+    if (entryIndex === -1) return;
+    logEntries.splice(entryIndex, 1);
     localStorage.setItem("log", JSON.stringify(logEntries));
   }
 }
@@ -218,17 +220,17 @@ document
   .addEventListener("click", deleteAllLogEntries);
 
 const updateLogEntryDateTime = (row) => {
-  const input = row.querySelector('.edit-datetime');
   const originalTimestamp = Number(row.id);
-  const newTimestamp = new Date(input.value).getTime();
+  const modalInput = document.getElementById('modalDatetimeInput');
+  const modal = new bootstrap.Modal(document.getElementById('datetimeModal'));
 
-  const sure = confirm(
-    `Change entry time from ${formatDate(originalTimestamp)} to ${formatDate(newTimestamp)}?`
-  );
+  modalInput.value = formatDateForInput(originalTimestamp);
 
-  if (sure) {
+  modal.show();
+
+  const saveHandler = () => {
+    const newTimestamp = new Date(modalInput.value).getTime();
     const log = JSON.parse(localStorage.getItem("log"));
-
     const entryIndex = log.findIndex(entry => entry.datetime === originalTimestamp);
     log[entryIndex].datetime = newTimestamp;
 
@@ -237,13 +239,23 @@ const updateLogEntryDateTime = (row) => {
 
     localStorage.setItem("log", JSON.stringify(log));
 
-    // re-render log
+    modal.hide();
+
+    // Re-render log
     showLog();
-  } else {
-    // Reset the input to original value if cancelled
-    input.value = formatDateForInput(originalTimestamp);
+
+    cleanupListeners();
+  };
+
+  const cleanupListeners = () => {
+    document.getElementById('saveDatetime').removeEventListener('click', saveHandler);
+    document.getElementById('datetimeModal').removeEventListener('hidden.bs.modal', cleanupListeners);
+    console.log("cleared");
   }
-}
+
+  document.getElementById('saveDatetime').addEventListener('click', saveHandler);
+  document.getElementById('datetimeModal').addEventListener('hidden.bs.modal', cleanupListeners);
+};
 
 function showLog() {
   const log = JSON.parse(localStorage.getItem("log"));
@@ -302,14 +314,12 @@ function showLog() {
     return button.outerHTML;
   };
 
-  // create log entry datetime input
-  const datetimeInput = (timestamp) => {
-    const input = document.createElement('input');
-    input.type = 'datetime-local';
-    input.className = 'edit-datetime form-control form-control-sm';
-    input.step = '1';
-    input.setAttribute('value', formatDateForInput(timestamp));
-    return input.outerHTML;
+  // create log entry datetime modal button
+  const datetimeModalBtn = (timestamp) => {
+    const button = document.createElement('button');
+    button.className = 'edit-datetime btn btn-link text-decoration-none';
+    button.textContent = formatDate(timestamp);
+    return button.outerHTML;
   };
 
   for (const entry of log) {
@@ -317,7 +327,7 @@ function showLog() {
     tr.setAttribute("id", entry.datetime);
 
     const bodyCols = [
-      datetimeInput(entry.datetime),
+      datetimeModalBtn(entry.datetime),
       entry.units,
       entry.carbs,
       entry.bg,
@@ -333,8 +343,8 @@ function showLog() {
       tr.appendChild(td);
     }
 
-    tr.querySelector(".delete-btn").addEventListener("click", () => deleteLogEntry(Number(tr.id)));
-    tr.querySelector('.edit-datetime').addEventListener("change", () => updateLogEntryDateTime(tr));
+    tr.querySelector('.edit-datetime').addEventListener("click", () => updateLogEntryDateTime(tr));
+    tr.querySelector(".delete-btn").addEventListener("click", () => deleteLogEntry(tr));
 
     tbody.appendChild(tr);
   }
