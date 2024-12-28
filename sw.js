@@ -4,6 +4,7 @@ const ASSETS = [
   './',
   './index.html',
   './script.js',
+  './version.js',
   './manifest.json',
   './assets/favicon.png',
   './assets/apple_icon.png',
