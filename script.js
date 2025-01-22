@@ -47,7 +47,7 @@ document.addEventListener("keydown", (event) => {
   const field = document.activeElement;
 
   //backspace - delete carb
-  if (event.key === 'Backspace' || event.key === 'Delete') {
+  if (event.key === "Backspace" || event.key === "Delete") {
     if (field.value === "" && /carb/.test(field.id) && field.id !== "carb") {
       event.preventDefault();
       field.previousElementSibling.focus();
@@ -55,7 +55,7 @@ document.addEventListener("keydown", (event) => {
     }
   }
   //enter - create carb
-  if (event.key === 'Enter') {
+  if (event.key === "Enter") {
     if (/carb/.test(field.id)) {
       event.preventDefault();
       addField();
@@ -85,7 +85,7 @@ function storeValues() {
   for (const input of [...document.querySelectorAll(".store")]) {
     localStorage.setItem(
       input.id,
-      input.id === "carb" ? totalCarbs() : input.value
+      input.id === "carb" ? totalCarbs() : input.value,
     );
   }
 }
@@ -94,10 +94,7 @@ function validFields() {
   const requiredFields = [...document.querySelectorAll(".required")];
   let hasTerms = true;
   for (const required of requiredFields) {
-    if (
-      !required.value ||
-      Number(required.value) < Number(required.min)
-    ) {
+    if (!required.value || Number(required.value) < Number(required.min)) {
       required.classList.add("is-invalid");
       if (required.classList.contains("term")) hasTerms = false;
     } else required.classList.remove("is-invalid");
@@ -143,8 +140,12 @@ function calcUnits() {
 }
 
 function totalCarbs() {
-  return [...document.querySelectorAll(".carbs")].reduce((total, carb) =>
-    total + Number.parseInt(carb.value || 0), 0) || "";
+  return (
+    [...document.querySelectorAll(".carbs")].reduce(
+      (total, carb) => total + Number.parseInt(carb.value || 0),
+      0,
+    ) || ""
+  );
 }
 
 const logDose = () => {
@@ -176,7 +177,7 @@ const logDose = () => {
 
   clearFields();
   toggleActiveDoseBadge();
-}
+};
 document.getElementById("log-btn").addEventListener("click", logDose);
 
 const deleteLogEntry = (row) => {
@@ -191,17 +192,17 @@ const deleteLogEntry = (row) => {
 
     // remove from local storage
     const logEntries = JSON.parse(localStorage.getItem("log"));
-    const entryIndex = logEntries.findIndex(entry => entry.datetime === timestamp);
+    const entryIndex = logEntries.findIndex(
+      (entry) => entry.datetime === timestamp,
+    );
     if (entryIndex === -1) return;
     logEntries.splice(entryIndex, 1);
     localStorage.setItem("log", JSON.stringify(logEntries));
   }
-}
+};
 
 const deleteAllLogEntries = () => {
-  const sure = confirm(
-    "You about to delete all log entries.\nAre you sure?",
-  );
+  const sure = confirm("You about to delete all log entries.\nAre you sure?");
   if (sure) {
     const log = document.getElementById("log");
     const view = document.getElementById("view-log-btn");
@@ -214,15 +215,15 @@ const deleteAllLogEntries = () => {
     view.classList.remove("d-none");
     deleteAllButton.classList.add("d-none");
   }
-}
+};
 document
   .getElementById("delete-all-btn")
   .addEventListener("click", deleteAllLogEntries);
 
 const updateLogEntryDateTime = (row) => {
   const originalTimestamp = Number(row.id);
-  const modalInput = document.getElementById('modalDatetimeInput');
-  const modal = new bootstrap.Modal(document.getElementById('datetimeModal'));
+  const modalInput = document.getElementById("modalDatetimeInput");
+  const modal = new bootstrap.Modal(document.getElementById("datetimeModal"));
 
   modalInput.value = formatDateForInput(originalTimestamp);
 
@@ -231,7 +232,9 @@ const updateLogEntryDateTime = (row) => {
   const saveHandler = () => {
     const newTimestamp = new Date(modalInput.value).getTime();
     const log = JSON.parse(localStorage.getItem("log"));
-    const entryIndex = log.findIndex(entry => entry.datetime === originalTimestamp);
+    const entryIndex = log.findIndex(
+      (entry) => entry.datetime === originalTimestamp,
+    );
     log[entryIndex].datetime = newTimestamp;
 
     // sort (ascending)
@@ -248,13 +251,21 @@ const updateLogEntryDateTime = (row) => {
   };
 
   const cleanupListeners = () => {
-    document.getElementById('saveDatetime').removeEventListener('click', saveHandler);
-    document.getElementById('datetimeModal').removeEventListener('hidden.bs.modal', cleanupListeners);
+    document
+      .getElementById("saveDatetime")
+      .removeEventListener("click", saveHandler);
+    document
+      .getElementById("datetimeModal")
+      .removeEventListener("hidden.bs.modal", cleanupListeners);
     console.log("cleared");
-  }
+  };
 
-  document.getElementById('saveDatetime').addEventListener('click', saveHandler);
-  document.getElementById('datetimeModal').addEventListener('hidden.bs.modal', cleanupListeners);
+  document
+    .getElementById("saveDatetime")
+    .addEventListener("click", saveHandler);
+  document
+    .getElementById("datetimeModal")
+    .addEventListener("hidden.bs.modal", cleanupListeners);
 };
 
 function showLog() {
@@ -305,19 +316,20 @@ function showLog() {
 
   // create log entry delete button
   const deleteBtn = () => {
-    const button = document.createElement('button');
-    button.className = 'delete-btn btn btn-sm p-1 btn-danger bg-danger';
-    button.type = 'button';
-    const icon = document.createElement('i');
-    icon.className = 'bi bi-x-lg';
+    const button = document.createElement("button");
+    button.className = "delete-btn btn btn-sm p-1 btn-danger bg-danger";
+    button.type = "button";
+    const icon = document.createElement("i");
+    icon.className = "bi bi-x-lg";
     button.appendChild(icon);
     return button.outerHTML;
   };
 
   // create log entry datetime modal button
   const datetimeModalBtn = (timestamp) => {
-    const button = document.createElement('button');
-    button.className = 'edit-datetime btn btn-link btn-sm text-decoration-none p-0';
+    const button = document.createElement("button");
+    button.className =
+      "edit-datetime btn btn-link btn-sm text-decoration-none p-0";
     button.textContent = formatDate(timestamp);
     return button.outerHTML;
   };
@@ -343,8 +355,12 @@ function showLog() {
       tr.appendChild(td);
     }
 
-    tr.querySelector('.edit-datetime').addEventListener("click", () => updateLogEntryDateTime(tr));
-    tr.querySelector(".delete-btn").addEventListener("click", () => deleteLogEntry(tr));
+    tr.querySelector(".edit-datetime").addEventListener("click", () =>
+      updateLogEntryDateTime(tr),
+    );
+    tr.querySelector(".delete-btn").addEventListener("click", () =>
+      deleteLogEntry(tr),
+    );
 
     tbody.appendChild(tr);
   }
@@ -363,31 +379,33 @@ const downloadLog = () => {
         return;
       }
 
-      const blob = new Blob([log], { type: 'application/json' });
+      const blob = new Blob([log], { type: "application/json" });
       const url = URL.createObjectURL(blob);
 
-      const anchor = document.createElement('a');
+      const anchor = document.createElement("a");
       anchor.href = url;
       anchor.download = "data.json";
       anchor.click();
 
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Failed to download log:', error);
+      console.error("Failed to download log:", error);
     }
   }
-}
+};
 document
   .getElementById("download-log-btn")
   .addEventListener("click", downloadLog);
 
 function saveToObsidian() {
-  const formatFileDate = timestamp => {
-    const parts = new Date(timestamp).toLocaleDateString('en-US', {
-      year: '2-digit',
-      month: '2-digit',
-      day: '2-digit'
-    }).split('/');
+  const formatFileDate = (timestamp) => {
+    const parts = new Date(timestamp)
+      .toLocaleDateString("en-US", {
+        year: "2-digit",
+        month: "2-digit",
+        day: "2-digit",
+      })
+      .split("/");
     return `${parts[2]}${parts[0]}${parts[1]}`;
   };
 
@@ -413,7 +431,7 @@ const toggleObsidian = () => {
 
   if (checked) vault.parentElement.classList.remove("fade");
   else vault.parentElement.classList.add("fade");
-}
+};
 document
   .getElementById("obsidian-toggle")
   .addEventListener("click", toggleObsidian);
@@ -432,7 +450,8 @@ function activeDose() {
   const hoursSince = new Date(sinceLast).getUTCHours();
 
   let count = "";
-  if (hoursSince) count = `${hoursSince + Number.parseFloat((minutesSince / 60).toFixed(1))}h`;
+  if (hoursSince)
+    count = `${hoursSince + Number.parseFloat((minutesSince / 60).toFixed(1))}h`;
   else if (minutesSince) count = `${minutesSince}m`;
   else count = `${secondsSince}s`;
 
@@ -456,24 +475,24 @@ setInterval(toggleActiveDoseBadge, 1000);
 
 // Helpers
 function formatDate(timestamp) {
-  return new Date(timestamp).toLocaleString('en-US', {
-    year: '2-digit',
-    month: '2-digit',
-    day: '2-digit',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true
+  return new Date(timestamp).toLocaleString("en-US", {
+    year: "2-digit",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
   });
 }
 
 function formatDateForInput(timestamp) {
   const date = new Date(timestamp);
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const seconds = String(date.getSeconds()).padStart(2, "0");
 
   // Format as YYYY-MM-DDThh:mm:ss (ISO)
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
