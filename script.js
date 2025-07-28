@@ -413,7 +413,7 @@ function saveToObsidian() {
   const vault = encodeURI(document.getElementById("obsidian-vault").value);
   const file = `archive/bolus ${formatFileDate(log[0].datetime)}-${formatFileDate(log.at(-1).datetime)}`;
   let content =
-    "---\ntags:\n  - records/health/bolus\n---\n\nDate|Units|Carbs|BGL|ICR|ISF|Target\n--|--|--|--|--|--|--";
+    "---\ntags:\n  - records/health/dose/bolus\n---\n\nDate|Units|Carbs|BGL|ICR|ISF|Target\n--|--|--|--|--|--|--";
 
   for (const entry of log) {
     entry.datetime = formatDate(entry.datetime);
